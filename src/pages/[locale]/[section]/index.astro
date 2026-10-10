@@ -1,12 +1,13 @@
 ---
 import Base from '../../../layouts/Base.astro';
-import { LOCALES, RECORD_TYPES, type Locale, type RecordType } from '../../../lib/content/constants.ts';
+import { LOCALES, type Locale, type RecordType } from '../../../lib/content/constants.ts';
 import { OTHER_LOCALE, SECTION_SLUGS, UI, recordUrl, sectionUrl } from '../../../lib/i18n.ts';
-import { recordsOfType, titleFor } from '../../../lib/site.ts';
+import { recordsOfType, titleFor, visibleTypes } from '../../../lib/site.ts';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const types = await visibleTypes();
   return LOCALES.flatMap((locale) =>
-    RECORD_TYPES.map((type) => ({ params: { locale, section: SECTION_SLUGS[type][locale] }, props: { type } })),
+    types.map((type) => ({ params: { locale, section: SECTION_SLUGS[type][locale] }, props: { type } })),
   );
 }
 const locale = Astro.params.locale as Locale;

@@ -196,7 +196,7 @@ The target is WCAG 2.2 AA. The site uses semantic landmarks, a skip link, visibl
 
 ## 7. Validation, testing, and deployment
 
-`npm run ci` runs the steps below in order. The [CI workflow](../.github/workflows/ci.yml) runs the same command; it has not yet run on GitHub.
+`npm run ci` runs the steps below in order. The [workflow](../.github/workflows/ci.yml) runs the same command on every push and pull request.
 
 | Step | What it proves |
 | --- | --- |
@@ -205,11 +205,12 @@ The target is WCAG 2.2 AA. The site uses semantic landmarks, a skip link, visibl
 | `test` (Vitest) | Each of the 64 `fixtures/invalid` cases fails with exactly its expected codes. Every validator code has a case, and every reference field has its own dangling case. The production gate, dates, i18n parity, and URLs are also tested. |
 | `build:fixtures` + `test:e2e` | Positive rendering of all fixture records in both languages, served under `/Isaac_Ishmael/` with Pages-like behavior (301 to the trailing slash, 404 status). Also covers the language switch, citation anchors, banners, keyboard use, axe, and mobile layout. |
 | `leak-test` | A production build over `fixtures/valid` emits no record page, and a full scan of `dist/` finds no withheld ID, title, summary, or fixture token, and no source files. That corpus contains published fixtures, non-fixture drafts, and draft translations. As a negative control, the same scan must fail on a fixtures build. |
-| `build` + `check:dist` | The real production build, scanned against `content/`. |
+| `build` + `check:dist` | The real production build, scanned against both `content/` and `fixtures/valid/`. |
+| `test:e2e:prod` | Production build: crawl of every internal link and asset (all 200), no fixture IDs or token, no `noindex`, no links to empty sections, language switch, direct loads, 404, axe, mobile overflow, keyboard. `npm run verify:live` runs the same suite against the deployed site. |
 
 Builds retry up to twice on transient `EPERM`/`EBUSY` file locks. Locks of this kind were observed with OneDrive sync running.
 
-**Deployment.** Nothing has been deployed, and the repository has no deploy workflow. The deploy plan is in D-05.
+**Deployment.** The workflow's `deploy` job needs the `check` job (all of the above) and runs only for `main`, publishing the scanned `dist/` through `actions/upload-pages-artifact` and `actions/deploy-pages` (D-05). Production navigation lists only sections that have published records.
 
 ## 8. Dependency on the research sample
 

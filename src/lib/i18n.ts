@@ -11,6 +11,11 @@ export const SECTION_SLUGS: Record<RecordType, Record<Locale, string>> = {
   response: { en: 'responses', es: 'respuestas' },
 };
 
+/** Fixed (non-record) pages. */
+export const PAGE_SLUGS = {
+  methodology: { en: 'methodology', es: 'metodologia' },
+} as const satisfies Record<string, Record<Locale, string>>;
+
 export const OTHER_LOCALE: Record<Locale, Locale> = { en: 'es', es: 'en' };
 
 const BASE = (import.meta.env?.BASE_URL ?? '/Isaac_Ishmael/').replace(/\/?$/, '/');
@@ -24,6 +29,7 @@ export function url(...segments: string[]): string {
 export const sectionUrl = (locale: Locale, type: RecordType) => url(locale, SECTION_SLUGS[type][locale]);
 export const recordUrl = (locale: Locale, type: RecordType, id: string) =>
   url(locale, SECTION_SLUGS[type][locale], id);
+export const pageUrl = (locale: Locale, page: keyof typeof PAGE_SLUGS) => url(locale, PAGE_SLUGS[page][locale]);
 
 export const UI = {
   en: {
@@ -69,6 +75,10 @@ export const UI = {
     notFoundTitle: 'Page not found',
     notFoundBody: 'This address does not match a page on this site.',
     chooseLanguage: 'Choose a language',
+    methodology: 'Methodology',
+    repository: 'Source code and planning documents',
+    previewLabel: 'Preview',
+    footerNav: 'Site information',
     kind: 'Kind',
     instrument: 'Instrument type',
     issuer: 'Issuing body',
@@ -131,6 +141,10 @@ export const UI = {
     notFoundTitle: 'Página no encontrada',
     notFoundBody: 'Esta dirección no corresponde a ninguna página del sitio.',
     chooseLanguage: 'Elija un idioma',
+    methodology: 'Metodología',
+    repository: 'Código fuente y documentos de planificación',
+    previewLabel: 'Vista previa',
+    footerNav: 'Información del sitio',
     kind: 'Tipo',
     instrument: 'Tipo de instrumento',
     issuer: 'Órgano emisor',

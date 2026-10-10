@@ -28,6 +28,8 @@ npx playwright install chromium
 | `npm run build`, then `npm run check:dist -- --corpus content` | Builds the real production site and scans it. |
 | `npm run build:preview` | Local-only build that includes drafts, each marked with a banner. |
 | `npm run serve` | Serves `dist/` at `http://localhost:4321/Isaac_Ishmael/`. |
+| `npm run test:e2e:prod` | Tests the production build in `dist/`. |
+| `npm run verify:live` | Runs the production tests against https://rabelo83.github.io/Isaac_Ishmael/. |
 | `npm run ci` | Runs every check, in the same order as CI. |
 
 `dist/` holds whichever mode was built last. Rebuild in production mode before relying on it.

@@ -1,19 +1,53 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { LOCALES, RECORD_TYPES, type Locale } from '../../lib/content/constants.ts';
-import { OTHER_LOCALE, UI, sectionUrl, url } from '../../lib/i18n.ts';
+import { LOCALES, type Locale } from '../../lib/content/constants.ts';
+import { COPY, REPOSITORY_URL } from '../../lib/copy.ts';
+import { OTHER_LOCALE, UI, pageUrl, url } from '../../lib/i18n.ts';
 
 export function getStaticPaths() {
   return LOCALES.map((locale) => ({ params: { locale } }));
 }
 const locale = Astro.params.locale as Locale;
 const t = UI[locale];
+const c = COPY[locale];
 ---
 
-<Base locale={locale} title={t.siteTitle} alternate={url(OTHER_LOCALE[locale])}>
+<Base locale={locale} title={t.siteTitle} alternate={url(OTHER_LOCALE[locale])} description={c.homeLead}>
   <h1>{t.siteTitle}</h1>
-  <p>{t.siteTagline}</p>
-  <ul>
-    {RECORD_TYPES.map((type) => <li><a href={sectionUrl(locale, type)}>{t.sections[type]}</a></li>)}
-  </ul>
+  <p class="lead">{c.homeLead}</p>
+
+  <section aria-labelledby="purpose">
+    <h2 id="purpose">{c.purposeHeading}</h2>
+    {c.purpose.map((p) => <p>{p}</p>)}
+  </section>
+
+  <section aria-labelledby="areas">
+    <h2 id="areas">{c.areasHeading}</h2>
+    <p>{c.areasIntro}</p>
+    <ul class="areas">
+      {c.areas.map((a) => (
+        <li class="area">
+          <h3>{a.title}</h3>
+          <p>{a.body}</p>
+          <p class="status-tag">{c.forthcoming}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="method">
+    <h2 id="method">{c.methodHeading}</h2>
+    <ul>{c.methodSummary.map((p) => <li>{p}</li>)}</ul>
+    <p><a href={pageUrl(locale, 'methodology')}>{c.methodLink}</a></p>
+  </section>
+
+  <section aria-labelledby="not">
+    <h2 id="not">{c.notHeading}</h2>
+    <ul>{c.notList.map((p) => <li>{p}</li>)}</ul>
+  </section>
+
+  <section aria-labelledby="repo">
+    <h2 id="repo">{c.repoHeading}</h2>
+    <p>{c.repoBody} <a href={REPOSITORY_URL} rel="noopener">{c.repoLink}</a></p>
+  </section>
 </Base>

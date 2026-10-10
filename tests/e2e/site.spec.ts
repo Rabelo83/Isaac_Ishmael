@@ -18,8 +18,8 @@ test.beforeAll(async ({ request }) => {
 test('root landing page links to both languages', async ({ page }) => {
   await page.goto(BASE);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.getByRole('link', { name: 'English' })).toHaveAttribute('href', `${BASE}en/`);
-  await expect(page.getByRole('link', { name: 'Español' })).toHaveAttribute('href', `${BASE}es/`);
+  await expect(page.getByRole('link', { name: 'Enter in English' })).toHaveAttribute('href', `${BASE}en/`);
+  await expect(page.getByRole('link', { name: 'Entrar en español' })).toHaveAttribute('href', `${BASE}es/`);
 });
 
 test('every record page loads directly in both languages', async ({ request }) => {
@@ -54,10 +54,10 @@ test('nested URL without trailing slash redirects, unknown paths return the 404 
 
 test('language switch keeps the record, query string, and back again', async ({ page }) => {
   await page.goto(`${BASE}en/claims/clm-example-one/?category=legal`);
-  await page.getByRole('link', { name: 'Leer en español' }).click();
+  await page.getByRole('banner').getByRole('link', { name: 'Leer en español' }).click();
   await expect(page).toHaveURL(`${BASE}es/afirmaciones/clm-example-one/?category=legal`);
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
-  await page.getByRole('link', { name: 'Read in English' }).click();
+  await page.getByRole('banner').getByRole('link', { name: 'Read in English' }).click();
   await expect(page).toHaveURL(`${BASE}en/claims/clm-example-one/?category=legal`);
 });
 
@@ -98,7 +98,7 @@ test('keyboard: skip link first, then reaches the language switch', async ({ pag
   await expect(page).toHaveURL(/#main$/);
   await page.goto(`${BASE}en/claims/clm-example-one/`);
   for (let i = 0; i < 3; i++) await page.keyboard.press('Tab');
-  await expect(page.getByRole('link', { name: 'Leer en español' })).toBeFocused();
+  await expect(page.getByRole('banner').getByRole('link', { name: 'Leer en español' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(`${BASE}es/afirmaciones/clm-example-one/`);
 });

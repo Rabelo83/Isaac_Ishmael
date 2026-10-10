@@ -1,8 +1,8 @@
 ---
 import type { Locale } from '../lib/content/constants.ts';
-import { RECORD_TYPES } from '../lib/content/constants.ts';
-import { OTHER_LOCALE, UI, sectionUrl, url } from '../lib/i18n.ts';
-import { MODE } from '../lib/site.ts';
+import { COPY, REPOSITORY_URL, SITE_STAGE } from '../lib/copy.ts';
+import { OTHER_LOCALE, UI, pageUrl, sectionUrl, url } from '../lib/i18n.ts';
+import { MODE, visibleTypes } from '../lib/site.ts';
 import '../styles/base.css';
 
 interface Props {
@@ -10,13 +10,19 @@ interface Props {
   title: string;
   /** Path of the same page in the other language. */
   alternate: string;
+  description?: string;
   banner?: 'draft' | 'fixture';
 }
-const { locale, title, alternate, banner } = Astro.props;
+const { locale, title, alternate, description, banner } = Astro.props;
 const t = UI[locale];
 const other = OTHER_LOCALE[locale];
 const here = Astro.url.pathname;
 const pageTitle = title === t.siteTitle ? title : `${title} · ${t.siteTitle}`;
+const nav = [
+  { href: url(locale), label: t.home },
+  { href: pageUrl(locale, 'methodology'), label: t.methodology },
+  ...(await visibleTypes()).map((type) => ({ href: sectionUrl(locale, type), label: t.sections[type] })),
+];
 ---
 
 <!doctype html>
@@ -27,33 +33,48 @@ const pageTitle = title === t.siteTitle ? title : `${title} · ${t.siteTitle}`;
     <meta name="build-mode" content={MODE} />
     {MODE !== 'production' && <meta name="robots" content="noindex, nofollow" />}
     <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href={`${url()}favicon.svg`} type="image/svg+xml" />
     <link rel="alternate" hreflang={locale} href={new URL(here, Astro.site)} />
     <link rel="alternate" hreflang={other} href={new URL(alternate, Astro.site)} />
   </head>
   <body>
     <a class="skip-link" href="#main">{t.skipToContent}</a>
     <header class="site-header">
-      <a class="site-title" href={url(locale)}>{t.siteTitle}</a>
-      <a class="language-switch" href={alternate} hreflang={other} lang={other} data-language-switch>
-        {t.switchLanguage}
-      </a>
+      <div class="header-row">
+        <a class="site-title" href={url(locale)}>{t.siteTitle}</a>
+        <a class="language-switch" href={alternate} hreflang={other} lang={other} data-language-switch>
+          {t.switchLanguage}
+        </a>
+      </div>
       <nav aria-label={t.mainNav}>
         <ul>
-          {RECORD_TYPES.map((type) => (
+          {nav.map((item) => (
             <li>
-              <a href={sectionUrl(locale, type)} aria-current={here.startsWith(sectionUrl(locale, type)) ? 'page' : undefined}>
-                {t.sections[type]}
-              </a>
+              <a href={item.href} aria-current={here === item.href ? 'page' : undefined}>{item.label}</a>
             </li>
           ))}
         </ul>
       </nav>
     </header>
+    {SITE_STAGE === 'preview' && MODE === 'production' && (
+      <p class="banner banner-preview" role="note"><strong>{t.previewLabel}.</strong> {COPY[locale].previewNotice}</p>
+    )}
     {banner === 'draft' && <p class="banner banner-draft" role="note">{t.draftBanner}</p>}
     {banner === 'fixture' && <p class="banner banner-fixture" role="note">{t.fixtureBanner}</p>}
     <main id="main" tabindex="-1">
       <slot />
     </main>
+    <footer class="site-footer">
+      <nav aria-label={t.footerNav}>
+        <ul>
+          <li><a href={pageUrl(locale, 'methodology')}>{t.methodology}</a></li>
+          <li><a href={REPOSITORY_URL} rel="noopener">{t.repository}</a></li>
+          <li><a href={alternate} hreflang={other} lang={other} data-language-switch>{t.switchLanguage}</a></li>
+        </ul>
+      </nav>
+      <p>{COPY[locale].footer}</p>
+    </footer>
     <script>
       // Keep filter context (query string) and in-page position when switching language.
       for (const a of document.querySelectorAll<HTMLAnchorElement>('a[data-language-switch]')) {

@@ -1,7 +1,7 @@
 // Build-time data access for pages.
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { buildModeFromEnv } from './content/corpus.ts';
-import type { Locale, RecordType } from './content/constants.ts';
+import { RECORD_TYPES, type Locale, type RecordType } from './content/constants.ts';
 import type { ContentRecord, TextFrontmatter } from './content/schemas.ts';
 
 export const MODE = buildModeFromEnv(process.env.SITE_MODE);
@@ -35,4 +35,14 @@ export async function textFor(locale: Locale, id: string) {
 export async function titleFor(locale: Locale, id: string): Promise<string> {
   const entry = (await texts()).get(`${locale}/${id}`);
   return entry ? (entry.data as unknown as TextFrontmatter).title : id;
+}
+
+/**
+ * Sections that get pages and navigation links. Production omits empty sections so
+ * the public site never links to a page with nothing on it.
+ */
+export async function visibleTypes(): Promise<RecordType[]> {
+  if (MODE !== 'production') return [...RECORD_TYPES];
+  const present = new Set((await allRecords()).map((r) => r.type));
+  return RECORD_TYPES.filter((t) => present.has(t));
 }

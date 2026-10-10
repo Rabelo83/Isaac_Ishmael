@@ -1,11 +1,11 @@
-# Validation and tests only. There is deliberately no deploy job: publication
-# requires owner authorization (docs/DECISIONS.md D-05).
-name: CI
+# Validation, tests, and GitHub Pages deployment.
+# Every push and pull request runs the full check suite. Only a push to main
+# (or a manual run on main) deploys, and only after every check has passed.
+name: CI and Pages
 
 on:
-  pull_request:
   push:
-    branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -13,6 +13,10 @@ permissions:
 
 env:
   ASTRO_TELEMETRY_DISABLED: '1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   check:
@@ -25,4 +29,23 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      # Ends with a production build of content/ in dist/, scanned and tested.
       - run: npm run ci
+      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: check
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

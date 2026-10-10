@@ -1,23 +1,29 @@
-/* Minimal, unstyled-by-intent base. Visual design is out of scope for Task 002. */
+/* Restrained, reading-first styles. System fonts only; no external assets. */
 :root {
   --text: #1b1b1b;
   --muted: #4a4a4a;
-  --bg: #ffffff;
+  --bg: #fbfaf7;
+  --surface: #ffffff;
   --link: #0b4f9c;
+  --accent: #1d3b5c;
   --focus: #b35c00;
-  --rule: #c8c8c8;
+  --rule: #d6d3cc;
+  --preview-bg: #eef3f8;
   --draft-bg: #fff4d6;
-  --fixture-bg: #e8e0ff;
+  --fixture-bg: #ece5ff;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #ececec;
     --muted: #c4c4c4;
-    --bg: #161616;
+    --bg: #141414;
+    --surface: #1d1d1d;
     --link: #8cc4ff;
+    --accent: #a9c7e8;
     --focus: #ffb35c;
-    --rule: #4d4d4d;
+    --rule: #3d3d3d;
+    --preview-bg: #1b2733;
     --draft-bg: #3d3214;
     --fixture-bg: #2e2647;
   }
@@ -25,29 +31,59 @@
 @media (prefers-reduced-motion: reduce) {
   * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
 }
+*, *::before, *::after { box-sizing: border-box; }
 body {
   margin: 0;
-  padding: 0 1rem 3rem;
-  font: 1.0625rem/1.6 system-ui, sans-serif;
+  padding: 0 1rem 2rem;
+  font: 1.0625rem/1.65 system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--bg);
 }
-main, .site-header, .banner { max-width: 46rem; margin-inline: auto; }
+main, .site-header, .site-footer, .banner { max-width: 46rem; margin-inline: auto; }
+h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; line-height: 1.25; color: var(--accent); }
+h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin: 1.5rem 0 0.75rem; }
+h2 { font-size: 1.45rem; margin-top: 2.25rem; }
+h3 { font-size: 1.1rem; margin: 0 0 0.4rem; }
 a { color: var(--link); overflow-wrap: anywhere; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .skip-link { position: absolute; left: -999px; }
-.skip-link:focus { left: 1rem; top: 1rem; background: var(--bg); padding: 0.5rem; }
-.site-header { padding-block: 1rem; border-bottom: 1px solid var(--rule); }
-.site-title { font-weight: 700; margin-right: 1rem; }
-.site-header nav ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
-.banner { padding: 0.75rem 1rem; border: 2px solid currentColor; margin-top: 1rem; }
-.banner-draft { background: var(--draft-bg); }
-.banner-fixture { background: var(--fixture-bg); }
+.skip-link:focus { left: 1rem; top: 1rem; background: var(--surface); padding: 0.5rem; z-index: 1; }
+
+.site-header { padding-block: 1rem 0.5rem; border-bottom: 1px solid var(--rule); }
+.header-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 1rem; }
+.site-title { font-family: Georgia, serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); text-decoration: none; }
+.site-header nav ul, .site-footer ul { list-style: none; padding: 0; margin: 0.5rem 0 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.site-header nav a[aria-current='page'] { font-weight: 700; text-decoration-thickness: 2px; }
+.language-switch { font-weight: 600; }
+
+.banner { padding: 0.75rem 1rem; border-left: 4px solid var(--accent); margin-top: 1rem; border-radius: 2px; }
+.banner-preview { background: var(--preview-bg); }
+.banner-preview span { display: block; margin-top: 0.4rem; }
+.banner-draft { background: var(--draft-bg); border-left-color: currentColor; }
+.banner-fixture { background: var(--fixture-bg); border-left-color: currentColor; }
+
+.lead { font-size: 1.2rem; color: var(--muted); }
+.areas { list-style: none; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+.area { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 1rem; display: flex; flex-direction: column; }
+.area p { margin: 0 0 0.5rem; }
+.status-tag { margin-top: auto !important; font-size: 0.85rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.landing { padding-top: 2rem; }
+.landing-columns { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); margin-top: 1.5rem; }
+.landing-columns section { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 1.25rem; }
+.landing-columns h2 { margin-top: 0; }
+.button { display: inline-block; padding: 0.55rem 1rem; border-radius: 4px; background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 600; }
+.landing-repo { margin-top: 2rem; text-align: center; }
+
+.site-footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.95rem; color: var(--muted); }
+
 dl.meta { display: grid; grid-template-columns: minmax(8rem, max-content) 1fr; gap: 0.25rem 1rem; }
 dl.meta dt { font-weight: 600; color: var(--muted); }
 dl.meta dd { margin: 0; }
 .citations li { margin-bottom: 0.75rem; }
 .cite a { text-decoration: none; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--rule); }
 @media (max-width: 30rem) {
   dl.meta { grid-template-columns: 1fr; }
   dl.meta dd { margin-bottom: 0.5rem; }

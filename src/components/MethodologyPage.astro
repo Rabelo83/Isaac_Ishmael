@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import type { Locale } from '../lib/content/constants.ts';
+import { COPY } from '../lib/copy.ts';
+import { OTHER_LOCALE, pageUrl } from '../lib/i18n.ts';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = COPY[locale];
+---
+
+<Base locale={locale} title={c.methodologyTitle} alternate={pageUrl(OTHER_LOCALE[locale], 'methodology')} description={c.methodSummary[0]}>
+  <h1>{c.methodologyTitle}</h1>
+  {c.methodology.map((s) => (
+    <section>
+      <h2>{s.heading}</h2>
+      {s.paragraphs?.map((p) => <p>{p}</p>)}
+      {s.list && <ul>{s.list.map((item) => <li>{item}</li>)}</ul>}
+    </section>
+  ))}
+  <section>
+    <h2>{c.notHeading}</h2>
+    <ul>{c.notList.map((p) => <li>{p}</li>)}</ul>
+  </section>
+</Base>
