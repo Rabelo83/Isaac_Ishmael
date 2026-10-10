@@ -15,6 +15,6 @@ Out of scope: search, maps, accounts, analytics, historical content.
 
 - [x] Production output contains only the 5 preview pages, 404, and favicon; leak scans against `content/` and `fixtures/valid/` pass.
 - [x] Local `npm run ci` passes.
-- [ ] Remote history inspected; pushed without force; CI green on the task branch before `main` is updated.
-- [ ] Pages enabled (GitHub Actions source); deployment succeeds.
-- [ ] `npm run verify:live` passes against https://rabelo83.github.io/Isaac_Ishmael/.
+- [x] Remote was empty; pushed without force. Branch CI run 38078501915 green before `main` was fast-forwarded.
+- [x] Pages enabled via API (GitHub Actions source; `github-pages` environment limited to `main`). Run 38078639713: check and deploy succeeded.
+- [x] `npm run verify:live` passed (28/28, desktop and mobile) against https://rabelo83.github.io/Isaac_Ishmael/.
