@@ -1,0 +1,34 @@
+id: prp-example-plan-v1
+type: proposal
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+evidence_category: party_position
+proposal_id: example-plan
+version: "1"
+proposers: [act-example-mediator]
+participants: [act-example-state-a, act-example-state-b]
+mediators: [act-example-mediator]
+date: { kind: exact, date: { year: 2005, era: CE, month: 1, day: 20 }, precision: day }
+document_status: published_text
+topics:
+  borders: { state: addressed, citations: [cit-plan-text] }
+  sovereignty: { state: addressed, citations: [cit-plan-text] }
+  recognition: { state: not_addressed, citations: [cit-plan-text] }
+  security: { state: addressed, citations: [cit-plan-text] }
+  jerusalem_holy_sites: { state: not_established }
+  settlements: { state: not_addressed }
+  refugees: { state: not_established }
+  property_restitution_compensation: { state: not_established }
+  citizenship_equality: { state: not_addressed }
+  resources: { state: not_established }
+  economic_arrangements: { state: addressed, citations: [cit-plan-text] }
+  implementation_guarantees: { state: not_established }
+milestones:
+  - { kind: signature, date: { kind: approximate, date: { year: 2005, era: CE, month: 3 }, precision: month }, citations: [cit-plan-text] }
+citations:
+  - id: cit-plan-text
+    source: src-example-a
+    locator: { type: section, value: "Annex 1" }
+    relationship: supports
+    inspected_on: 2026-10-10

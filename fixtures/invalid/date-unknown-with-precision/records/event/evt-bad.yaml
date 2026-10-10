@@ -1,0 +1,6 @@
+id: evt-bad
+type: event
+review_status: draft
+fixture: true
+evidence_category: contemporary_record
+date: { kind: unknown, precision: year }

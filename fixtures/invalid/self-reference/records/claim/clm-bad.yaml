@@ -1,0 +1,6 @@
+id: clm-bad
+type: claim
+review_status: draft
+fixture: true
+evidence_category: historical_reconstruction
+related: [{ id: clm-bad, relation: context }]

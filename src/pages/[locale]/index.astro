@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import { LOCALES, RECORD_TYPES, type Locale } from '../../lib/content/constants.ts';
+import { OTHER_LOCALE, UI, sectionUrl, url } from '../../lib/i18n.ts';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale } }));
+}
+const locale = Astro.params.locale as Locale;
+const t = UI[locale];
+---
+
+<Base locale={locale} title={t.siteTitle} alternate={url(OTHER_LOCALE[locale])}>
+  <h1>{t.siteTitle}</h1>
+  <p>{t.siteTagline}</p>
+  <ul>
+    {RECORD_TYPES.map((type) => <li><a href={sectionUrl(locale, type)}>{t.sections[type]}</a></li>)}
+  </ul>
+</Base>

@@ -1,0 +1,14 @@
+id: src-bad
+type: source
+review_status: reviewed
+fixture: true
+last_substantive_review: 2026-10-10
+title: "SYNTHETIC-FIXTURE No access date"
+creators: [{ name: Example, role: author }]
+doc_type: report
+date: { kind: unknown }
+original_language: en
+links: [{ url: "https://example.org/x", kind: official_landing, language: en }]
+access_status: open
+inspection: full_text
+reuse: link_only

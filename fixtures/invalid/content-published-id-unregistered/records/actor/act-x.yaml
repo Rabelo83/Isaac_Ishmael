@@ -1,0 +1,7 @@
+id: act-x
+type: actor
+review_status: published
+fixture: false
+last_substantive_review: 2026-10-10
+kind: other
+authority_links: [{ url: "https://example.org/x", kind: official_landing, language: en }]

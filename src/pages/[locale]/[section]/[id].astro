@@ -1,0 +1,53 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CitationList from '../../../components/CitationList.astro';
+import RecordLink from '../../../components/RecordLink.astro';
+import RecordMeta from '../../../components/RecordMeta.astro';
+import { LOCALES, type Locale } from '../../../lib/content/constants.ts';
+import type { ContentRecord } from '../../../lib/content/schemas.ts';
+import { OTHER_LOCALE, SECTION_SLUGS, UI, label, recordUrl } from '../../../lib/i18n.ts';
+import { MODE, allRecords, textFor } from '../../../lib/site.ts';
+
+export async function getStaticPaths() {
+  const records = await allRecords();
+  return LOCALES.flatMap((locale) =>
+    records.map((record) => ({
+      params: { locale, section: SECTION_SLUGS[record.type][locale], id: record.id },
+      props: { record },
+    })),
+  );
+}
+const locale = Astro.params.locale as Locale;
+const { record } = Astro.props as { record: ContentRecord };
+const t = UI[locale];
+const text = await textFor(locale, record.id);
+const records = await allRecords();
+const available = new Set(records.map((r) => r.id));
+const byId = new Map(records.map((r) => [r.id, r]));
+const banner = MODE === 'fixtures' ? 'fixture' : record.review_status !== 'published' ? 'draft' : undefined;
+const citedBy = record.type === 'source' ? records.filter((r) => r.citations.some((c) => c.source === record.id)) : [];
+---
+
+<Base locale={locale} title={text?.fm.title ?? record.id} alternate={recordUrl(OTHER_LOCALE[locale], record.type, record.id)} banner={banner}>
+  <article>
+    <p><a href={`../`}>{t.sections[record.type]}</a></p>
+    <h1>{text?.fm.title ?? record.id}</h1>
+    {record.type === 'source' && <p lang={record.original_language}><cite>{record.title}</cite></p>}
+    {text ? <p><strong>{text.fm.summary}</strong></p> : <p role="note">{t.translationMissing}</p>}
+    <RecordMeta locale={locale} record={record} fm={text?.fm} available={available} />
+    {'disputes' in record && record.disputes.length > 0 && (
+      <section aria-labelledby="disputes-heading">
+        <h2 id="disputes-heading">{t.disputes}</h2>
+        <ul>{record.disputes.map((d) => <li>{d.concerns.map((c) => label(locale, c)).join(', ')} — {d.citations.map((c) => <a href={`#${c}`}>{c}</a>)}</li>)}</ul>
+      </section>
+    )}
+    {text && <div class="body"><text.Content /></div>}
+    <CitationList locale={locale} record={record} fm={text?.fm} sources={byId} available={available} />
+    {citedBy.length > 0 && (
+      <section aria-labelledby="cited-by-heading">
+        <h2 id="cited-by-heading">{t.citedBy}</h2>
+        <ul>{citedBy.map((r) => <li><RecordLink locale={locale} id={r.id} type={r.type} available={available} /> <small>({label(locale, r.review_status)})</small></li>)}</ul>
+      </section>
+    )}
+  </article>
+</Base>

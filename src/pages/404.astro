@@ -1,0 +1,22 @@
+---
+import '../styles/base.css';
+import { UI, url } from '../lib/i18n.ts';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{UI.en.notFoundTitle} · {UI.es.notFoundTitle}</title>
+  </head>
+  <body>
+    <main id="main">
+      <h1>{UI.en.notFoundTitle}</h1>
+      <p>{UI.en.notFoundBody} <a href={url('en')}>{UI.en.home}</a></p>
+      <h2 lang="es">{UI.es.notFoundTitle}</h2>
+      <p lang="es">{UI.es.notFoundBody} <a href={url('es')}>{UI.es.home}</a></p>
+    </main>
+  </body>
+</html>

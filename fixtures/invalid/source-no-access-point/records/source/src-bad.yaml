@@ -1,0 +1,14 @@
+id: src-bad
+type: source
+review_status: reviewed
+fixture: true
+last_substantive_review: 2026-10-10
+title: "SYNTHETIC-FIXTURE No access point"
+creators: [{ name: Example, role: author }]
+doc_type: report
+date: { kind: unknown }
+original_language: en
+accessed_on: 2026-10-10
+access_status: unavailable
+inspection: metadata_only
+reuse: link_only

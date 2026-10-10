@@ -1,0 +1,6 @@
+id: evt-bad
+type: event
+review_status: draft
+fixture: true
+evidence_category: contemporary_record
+date: { kind: approximate, date: { year: 1200, era: CE, month: 5 }, precision: century }

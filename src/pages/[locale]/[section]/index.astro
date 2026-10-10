@@ -1,0 +1,28 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { LOCALES, RECORD_TYPES, type Locale, type RecordType } from '../../../lib/content/constants.ts';
+import { OTHER_LOCALE, SECTION_SLUGS, UI, recordUrl, sectionUrl } from '../../../lib/i18n.ts';
+import { recordsOfType, titleFor } from '../../../lib/site.ts';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) =>
+    RECORD_TYPES.map((type) => ({ params: { locale, section: SECTION_SLUGS[type][locale] }, props: { type } })),
+  );
+}
+const locale = Astro.params.locale as Locale;
+const { type } = Astro.props as { type: RecordType };
+const t = UI[locale];
+const records = await recordsOfType(type);
+const items = await Promise.all(records.map(async (r) => ({ r, title: await titleFor(locale, r.id) })));
+---
+
+<Base locale={locale} title={t.sections[type]} alternate={sectionUrl(OTHER_LOCALE[locale], type)}>
+  <h1>{t.sections[type]}</h1>
+  {items.length === 0 ? (
+    <p>{t.pendingResearch}</p>
+  ) : (
+    <ul>
+      {items.map(({ r, title }) => <li><a href={recordUrl(locale, type, r.id)}>{title}</a></li>)}
+    </ul>
+  )}
+</Base>

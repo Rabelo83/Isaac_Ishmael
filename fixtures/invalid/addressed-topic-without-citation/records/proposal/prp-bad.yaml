@@ -1,0 +1,25 @@
+id: prp-bad
+type: proposal
+review_status: draft
+fixture: true
+evidence_category: party_position
+proposal_id: bad
+version: "1"
+proposers: [act-example-mediator]
+participants: [act-example-state-a]
+mediators: [act-example-mediator]
+date: { kind: unknown }
+document_status: other
+topics:
+  borders: { state: addressed, citations: [] }
+  sovereignty: { state: not_established }
+  recognition: { state: not_established }
+  security: { state: not_established }
+  jerusalem_holy_sites: { state: not_established }
+  settlements: { state: not_established }
+  refugees: { state: not_established }
+  property_restitution_compensation: { state: not_established }
+  citizenship_equality: { state: not_established }
+  resources: { state: not_established }
+  economic_arrangements: { state: not_established }
+  implementation_guarantees: { state: not_established }

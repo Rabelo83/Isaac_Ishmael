@@ -1,0 +1,6 @@
+# SYNTHETIC-FIXTURE copied into the real content root by mistake
+id: act-x
+type: actor
+review_status: draft
+fixture: false
+kind: other

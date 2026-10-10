@@ -1,0 +1,12 @@
+id: clm-example-reviewed
+type: claim
+review_status: reviewed
+fixture: false
+last_substantive_review: 2026-10-10
+evidence_category: party_position
+citations:
+  - id: cit-a-para
+    source: src-example-a
+    locator: { type: paragraph, value: "4" }
+    relationship: contextualizes
+    inspected_on: 2026-10-10

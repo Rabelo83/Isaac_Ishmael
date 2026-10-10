@@ -1,0 +1,11 @@
+id: evt-example-undated-draft
+type: event
+review_status: draft
+fixture: false
+evidence_category: textual_tradition
+date: { kind: unknown }
+citations:
+  - id: cit-draft-lead
+    source: src-example-draft
+    locator: { unavailable: "Lead not yet retrieved." }
+    relationship: supports

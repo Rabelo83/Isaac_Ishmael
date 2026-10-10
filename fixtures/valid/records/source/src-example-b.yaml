@@ -1,0 +1,18 @@
+id: src-example-b
+type: source
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+title: "SYNTHETIC-FIXTURE Example Source B: An Unpaginated Catalog Item"
+title_original: "SYNTHETIC-FIXTURE Ejemplo de fuente B"
+creators:
+  - { name: Example Author, role: author }
+doc_type: manuscript
+date: { kind: approximate, date: { year: 1200, era: CE }, precision: century }
+original_language: es
+links:
+  - { url: "https://example.org/catalog/b", kind: catalog, language: en }
+accessed_on: 2026-10-10
+access_status: catalog_only
+inspection: metadata_only
+reuse: link_only

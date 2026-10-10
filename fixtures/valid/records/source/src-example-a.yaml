@@ -1,0 +1,19 @@
+id: src-example-a
+type: source
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+title: "SYNTHETIC-FIXTURE Example Source A: A Paginated Report"
+creators:
+  - { name: Example Issuing Body, role: issuer }
+doc_type: report
+date: { kind: exact, date: { year: 2001, era: CE, month: 3, day: 14 }, precision: day }
+original_language: en
+links:
+  - { url: "https://example.org/source-a", kind: official_landing, language: en }
+  - { url: "https://example.org/source-a.pdf", kind: direct_document, language: en }
+  - { url: "https://example.org/source-a-es.pdf", kind: translation, language: es, translation_status: unofficial }
+accessed_on: 2026-10-10
+access_status: open
+inspection: full_text
+reuse: link_only

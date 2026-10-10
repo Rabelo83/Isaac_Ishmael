@@ -1,0 +1,13 @@
+id: src-example-draft
+type: source
+review_status: lead
+fixture: false
+title: "SYNTHETIC-FIXTURE Example Draft Lead Source"
+creators:
+  - { name: Example Unknown Issuer, role: issuer }
+doc_type: unknown
+date: { kind: unknown }
+original_language: en
+access_status: unavailable
+inspection: metadata_only
+reuse: link_only

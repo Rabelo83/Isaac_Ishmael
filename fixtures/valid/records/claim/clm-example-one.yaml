@@ -1,0 +1,23 @@
+id: clm-example-one
+type: claim
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+evidence_category: historical_reconstruction
+date: { kind: range, start: { year: 300, era: BCE }, end: { year: 100, era: CE }, precision: century }
+actors: [act-example-state-a]
+citations:
+  - id: cit-a-page
+    source: src-example-a
+    locator: { type: page, value: "12–13" }
+    relationship: supports
+    inspected_on: 2026-10-10
+  - id: cit-b-unpaginated
+    source: src-example-b
+    locator: { unavailable: "Catalog item without pagination or stable section numbers." }
+    relationship: qualifies
+    inspected_on: 2026-10-10
+disputes:
+  - { concerns: [dating, interpretation], citations: [cit-b-unpaginated] }
+related:
+  - { id: evt-example-range, relation: context }

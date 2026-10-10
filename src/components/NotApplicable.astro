@@ -1,0 +1,12 @@
+---
+import type { Locale } from '../lib/content/constants.ts';
+import { UI } from '../lib/i18n.ts';
+
+interface Props {
+  locale: Locale;
+  reason: string;
+}
+const { locale, reason } = Astro.props;
+---
+
+<em>{UI[locale].notApplicable}</em>: <span lang="en">{reason}</span>

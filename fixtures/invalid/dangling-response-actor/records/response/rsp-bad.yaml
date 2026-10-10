@@ -1,0 +1,10 @@
+id: rsp-bad
+type: response
+review_status: draft
+fixture: true
+evidence_category: party_position
+actor: act-nobody
+proposal: prp-example-plan-v1
+date: { kind: unknown }
+timing: contemporary
+position: rejected

@@ -1,0 +1,6 @@
+id: act-bad
+type: actor
+review_status: draft
+fixture: true
+kind: other
+authority_links: [{ url: "javascript:alert(1)", kind: official_landing, language: en }]

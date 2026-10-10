@@ -1,0 +1,54 @@
+/* Minimal, unstyled-by-intent base. Visual design is out of scope for Task 002. */
+:root {
+  --text: #1b1b1b;
+  --muted: #4a4a4a;
+  --bg: #ffffff;
+  --link: #0b4f9c;
+  --focus: #b35c00;
+  --rule: #c8c8c8;
+  --draft-bg: #fff4d6;
+  --fixture-bg: #e8e0ff;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #ececec;
+    --muted: #c4c4c4;
+    --bg: #161616;
+    --link: #8cc4ff;
+    --focus: #ffb35c;
+    --rule: #4d4d4d;
+    --draft-bg: #3d3214;
+    --fixture-bg: #2e2647;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+body {
+  margin: 0;
+  padding: 0 1rem 3rem;
+  font: 1.0625rem/1.6 system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+main, .site-header, .banner { max-width: 46rem; margin-inline: auto; }
+a { color: var(--link); overflow-wrap: anywhere; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.skip-link { position: absolute; left: -999px; }
+.skip-link:focus { left: 1rem; top: 1rem; background: var(--bg); padding: 0.5rem; }
+.site-header { padding-block: 1rem; border-bottom: 1px solid var(--rule); }
+.site-title { font-weight: 700; margin-right: 1rem; }
+.site-header nav ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; }
+.banner { padding: 0.75rem 1rem; border: 2px solid currentColor; margin-top: 1rem; }
+.banner-draft { background: var(--draft-bg); }
+.banner-fixture { background: var(--fixture-bg); }
+dl.meta { display: grid; grid-template-columns: minmax(8rem, max-content) 1fr; gap: 0.25rem 1rem; }
+dl.meta dt { font-weight: 600; color: var(--muted); }
+dl.meta dd { margin: 0; }
+.citations li { margin-bottom: 0.75rem; }
+.cite a { text-decoration: none; }
+@media (max-width: 30rem) {
+  dl.meta { grid-template-columns: 1fr; }
+  dl.meta dd { margin-bottom: 0.5rem; }
+}

@@ -1,0 +1,7 @@
+id: clm-bad
+type: claim
+review_status: draft
+fixture: true
+evidence_category: historical_reconstruction
+citations:
+  - { id: cit-x, source: src-does-not-exist, locator: { type: page, value: "1" }, relationship: supports }

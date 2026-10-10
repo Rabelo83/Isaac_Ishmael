@@ -1,0 +1,20 @@
+id: law-example-treaty
+type: legal_authority
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+evidence_category: legal
+instrument_type: treaty
+issuing_body: act-example-state-a
+forum: { not_applicable: "A treaty is concluded between states, not issued by a forum." }
+date: { kind: exact, date: { year: 1995, era: CE, month: 9, day: 1 }, precision: day }
+procedural_stage: { not_applicable: "No judicial procedure." }
+parties: [act-example-state-a, act-example-state-b]
+binding_scope: binding_on_states_parties
+separate_opinions: { not_applicable: "Treaties have no separate opinions." }
+citations:
+  - id: cit-treaty-article
+    source: src-example-a
+    locator: { type: article, value: "5(2)" }
+    relationship: supports
+    inspected_on: 2026-10-10

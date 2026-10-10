@@ -1,0 +1,6 @@
+id: evt-bad
+type: event
+review_status: draft
+fixture: true
+evidence_category: contemporary_record
+date: { kind: exact, date: { year: 1999, era: CE, month: 2, day: 30 }, precision: day }

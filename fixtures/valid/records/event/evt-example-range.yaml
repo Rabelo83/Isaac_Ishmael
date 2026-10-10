@@ -1,0 +1,14 @@
+id: evt-example-range
+type: event
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+evidence_category: contemporary_record
+date: { kind: range, start: { year: 1999, era: CE, month: 2 }, end: { year: 2000, era: CE, month: 11 }, precision: month }
+actors: [act-example-state-a, act-example-state-b]
+citations:
+  - id: cit-a-section
+    source: src-example-a
+    locator: { type: section, value: "2.1" }
+    relationship: supports
+    inspected_on: 2026-10-10

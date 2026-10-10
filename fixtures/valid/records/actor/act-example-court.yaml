@@ -1,0 +1,8 @@
+id: act-example-court
+type: actor
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+kind: court
+authority_links:
+  - { url: "https://example.org/actors/court", kind: official_landing, language: en }

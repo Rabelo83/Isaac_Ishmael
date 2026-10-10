@@ -1,0 +1,45 @@
+---
+import type { Locale } from '../lib/content/constants.ts';
+import type { ContentRecord, TextFrontmatter } from '../lib/content/schemas.ts';
+import { citationAnchor } from '../lib/cite.ts';
+import { UI, label } from '../lib/i18n.ts';
+import RecordLink from './RecordLink.astro';
+
+interface Props {
+  locale: Locale;
+  record: ContentRecord;
+  fm?: TextFrontmatter;
+  sources: Map<string, ContentRecord>;
+  available: Set<string>;
+}
+const { locale, record, fm, sources, available } = Astro.props;
+const t = UI[locale];
+---
+
+{record.citations.length > 0 && (
+  <section aria-labelledby="citations-heading">
+    <h2 id="citations-heading">{t.citations}</h2>
+    <ol class="citations">
+      {record.citations.map((c) => {
+        const src = sources.get(c.source);
+        const direct = src?.type === 'source' ? src.links : [];
+        return (
+          <li id={citationAnchor(c.id)}>
+            <RecordLink locale={locale} id={c.source} type="source" available={available} />
+            <dl class="meta">
+              <dt>{t.locator}</dt>
+              <dd>{"unavailable" in c.locator ? <>{t.locatorUnavailable}: {c.locator.unavailable}</> : <>{label(locale, c.locator.type)} {c.locator.value}</>}</dd>
+              <dt>{t.relationship}</dt>
+              <dd>{label(locale, c.relationship)}</dd>
+              {fm?.citation_notes[c.id] && (<><dt>{t.citation}</dt><dd>{fm.citation_notes[c.id]}</dd></>)}
+              {src?.type === 'source' && (<><dt>{t.accessStatus}</dt><dd>{label(locale, src.access_status)}; {label(locale, src.inspection)}</dd></>)}
+              {direct.length > 0 && (
+                <><dt>{t.links}</dt><dd><ul>{direct.map((l) => <li><a href={l.url} hreflang={l.language} rel="noopener">{l.url}</a></li>)}</ul></dd></>
+              )}
+            </dl>
+          </li>
+        );
+      })}
+    </ol>
+  </section>
+)}

@@ -1,0 +1,8 @@
+id: act-example-mediator
+type: actor
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+kind: mediator
+authority_links:
+  - { url: "https://example.org/actors/mediator", kind: official_landing, language: en }

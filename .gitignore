@@ -1,0 +1,7 @@
+# Workspace-local toolchain (portable Node, Playwright browsers)
+.tools/
+node_modules/
+dist/
+.astro/
+test-results/
+playwright-report/

@@ -1,0 +1,11 @@
+---
+id: clm-bad
+lang: en
+translation_status: original
+
+title: "SYNTHETIC-FIXTURE Bad en"
+summary: "Synthetic negative test input."
+citation_notes: {}
+---
+
+Text.

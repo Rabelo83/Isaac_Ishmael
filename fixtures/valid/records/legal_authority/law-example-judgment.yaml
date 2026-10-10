@@ -1,0 +1,26 @@
+id: law-example-judgment
+type: legal_authority
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+evidence_category: legal
+instrument_type: judgment
+issuing_body: act-example-court
+forum: act-example-court
+date: { kind: exact, date: { year: 2010, era: CE, month: 6, day: 30 }, precision: day }
+procedural_stage: merits
+parties: [act-example-state-a, act-example-state-b]
+binding_scope: parties_and_case
+separate_opinions:
+  - { author: Example Judge One, kind: dissenting, citation: cit-judgment-dissent }
+citations:
+  - id: cit-judgment-operative
+    source: src-example-a
+    locator: { type: paragraph, value: "88" }
+    relationship: supports
+    inspected_on: 2026-10-10
+  - id: cit-judgment-dissent
+    source: src-example-a
+    locator: { type: paragraph, value: "Dissent, 3" }
+    relationship: qualifies
+    inspected_on: 2026-10-10

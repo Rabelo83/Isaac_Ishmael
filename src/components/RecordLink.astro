@@ -1,0 +1,16 @@
+---
+import type { Locale, RecordType } from '../lib/content/constants.ts';
+import { recordUrl } from '../lib/i18n.ts';
+import { titleFor } from '../lib/site.ts';
+
+interface Props {
+  locale: Locale;
+  id: string;
+  type: RecordType;
+  available: Set<string>;
+}
+const { locale, id, type, available } = Astro.props;
+const title = await titleFor(locale, id);
+---
+
+{available.has(id) ? <a href={recordUrl(locale, type, id)}>{title}</a> : <span>{title}</span>}

@@ -1,0 +1,6 @@
+id: evt-bad
+type: event
+review_status: draft
+fixture: true
+evidence_category: contemporary_record
+date: { kind: range, start: { year: 100, era: CE }, end: { year: 50, era: BCE }, precision: year }

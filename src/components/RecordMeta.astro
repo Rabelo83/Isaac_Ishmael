@@ -1,0 +1,103 @@
+---
+import type { Locale } from '../lib/content/constants.ts';
+import { PROPOSAL_TOPICS } from '../lib/content/constants.ts';
+import { formatDate } from '../lib/content/dates.ts';
+import type { ContentRecord, TextFrontmatter } from '../lib/content/schemas.ts';
+import { UI, label } from '../lib/i18n.ts';
+import RecordLink from './RecordLink.astro';
+import NotApplicable from './NotApplicable.astro';
+
+interface Props {
+  locale: Locale;
+  record: ContentRecord;
+  fm?: TextFrontmatter;
+  /** IDs rendered in this build; anything else is shown without a link. */
+  available: Set<string>;
+}
+const { locale, record: r, fm, available } = Astro.props;
+const t = UI[locale];
+const na = (v: unknown): v is { not_applicable: string } =>
+  typeof v === 'object' && v !== null && 'not_applicable' in v;
+---
+
+<dl class="meta">
+  {'evidence_category' in r && (<><dt>{t.evidenceCategory}</dt><dd>{label(locale, r.evidence_category)}</dd></>)}
+  <dt>{t.reviewStatus}</dt><dd>{label(locale, r.review_status)}</dd>
+  {r.last_substantive_review && (<><dt>{t.lastReview}</dt><dd><time datetime={r.last_substantive_review}>{r.last_substantive_review}</time></dd></>)}
+  {'date' in r && r.date && (<><dt>{t.date}</dt><dd>{formatDate(r.date, locale)}</dd></>)}
+  {fm && (<><dt>{t.translationStatus}</dt><dd>{label(locale, fm.translation_status)}</dd></>)}
+
+  {r.type === 'source' && (
+    <>
+      <dt>{t.creators}</dt><dd>{r.creators.map((c) => c.name).join('; ')}</dd>
+      <dt>{t.originalLanguage}</dt><dd><code>{r.original_language}</code></dd>
+      <dt>{t.accessStatus}</dt><dd>{label(locale, r.access_status)}</dd>
+      <dt>{t.inspection}</dt><dd>{label(locale, r.inspection)}</dd>
+      <dt>{t.reuse}</dt><dd>{r.reuse}</dd>
+      {r.accessed_on && (<><dt>{t.accessedOn}</dt><dd><time datetime={r.accessed_on}>{r.accessed_on}</time></dd></>)}
+      <dt>{t.links}</dt>
+      <dd>
+        <ul>
+          {r.links.map((l) => (
+            <li><a href={l.url} hreflang={l.language} rel="noopener">{l.url}</a> (<code>{l.kind}</code>, <code>{l.language}</code>{l.translation_status && <>, <code>{l.translation_status}</code></>})</li>
+          ))}
+          {r.doi && <li><a href={`https://doi.org/${r.doi}`} rel="noopener">doi:{r.doi}</a></li>}
+        </ul>
+      </dd>
+    </>
+  )}
+
+  {r.type === 'actor' && (
+    <>
+      <dt>{t.kind}</dt><dd><code>{r.kind}</code></dd>
+      {r.authority_links.length > 0 && (
+        <><dt>{t.links}</dt><dd><ul>{r.authority_links.map((l) => <li><a href={l.url} rel="noopener">{l.url}</a></li>)}</ul></dd></>
+      )}
+    </>
+  )}
+
+  {r.type === 'legal_authority' && (
+    <>
+      <dt>{t.instrument}</dt><dd><code>{r.instrument_type}</code></dd>
+      <dt>{t.issuer}</dt><dd><RecordLink locale={locale} id={r.issuing_body} type="actor" available={available} /></dd>
+      <dt>{t.forum}</dt>
+      <dd>{na(r.forum) ? <NotApplicable locale={locale} reason={r.forum.not_applicable} /> : <RecordLink locale={locale} id={r.forum} type="actor" available={available} />}</dd>
+      <dt>{t.stage}</dt>
+      <dd>{na(r.procedural_stage) ? <NotApplicable locale={locale} reason={r.procedural_stage.not_applicable} /> : <code>{r.procedural_stage}</code>}</dd>
+      <dt>{t.bindingScope}</dt>
+      <dd>{na(r.binding_scope) ? <NotApplicable locale={locale} reason={r.binding_scope.not_applicable} /> : <code>{r.binding_scope}</code>}</dd>
+      <dt>{t.parties}</dt>
+      <dd>{na(r.parties) ? <NotApplicable locale={locale} reason={r.parties.not_applicable} /> : <ul>{r.parties.map((p) => <li><RecordLink locale={locale} id={p} type="actor" available={available} /></li>)}</ul>}</dd>
+    </>
+  )}
+
+  {r.type === 'proposal' && (
+    <>
+      <dt>{t.version}</dt><dd>{r.version} (<code>{r.proposal_id}</code>)</dd>
+      <dt>{t.documentStatus}</dt><dd><code>{r.document_status}</code></dd>
+      <dt>{t.proposers}</dt>
+      <dd><ul>{r.proposers.map((p) => <li><RecordLink locale={locale} id={p} type="actor" available={available} /></li>)}</ul></dd>
+    </>
+  )}
+
+  {r.type === 'response' && (
+    <>
+      <dt>{t.actor}</dt><dd><RecordLink locale={locale} id={r.actor} type="actor" available={available} /></dd>
+      <dt>{t.proposal}</dt><dd><RecordLink locale={locale} id={r.proposal} type="proposal" available={available} /></dd>
+      <dt>{t.timing}</dt><dd><code>{r.timing}</code></dd>
+      <dt>{t.position}</dt><dd><code>{r.position}</code></dd>
+    </>
+  )}
+</dl>
+
+{r.type === 'proposal' && (
+  <table>
+    <caption>{t.topics}</caption>
+    <thead><tr><th scope="col">{t.topic}</th><th scope="col">{t.state}</th></tr></thead>
+    <tbody>
+      {PROPOSAL_TOPICS.map((topic) => (
+        <tr><th scope="row"><code>{topic}</code></th><td><code>{r.topics[topic].state}</code></td></tr>
+      ))}
+    </tbody>
+  </table>
+)}

@@ -1,0 +1,8 @@
+id: clm-bad
+type: claim
+review_status: published
+fixture: true
+evidence_category: historical_reconstruction
+citations:
+  - { id: cit-x, source: src-example-a, locator: { type: page, value: "1" }, relationship: supports, inspected_on: 2026-10-10 }
+

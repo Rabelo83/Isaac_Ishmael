@@ -1,0 +1,69 @@
+---
+import type { Locale } from '../lib/content/constants.ts';
+import { RECORD_TYPES } from '../lib/content/constants.ts';
+import { OTHER_LOCALE, UI, sectionUrl, url } from '../lib/i18n.ts';
+import { MODE } from '../lib/site.ts';
+import '../styles/base.css';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  /** Path of the same page in the other language. */
+  alternate: string;
+  banner?: 'draft' | 'fixture';
+}
+const { locale, title, alternate, banner } = Astro.props;
+const t = UI[locale];
+const other = OTHER_LOCALE[locale];
+const here = Astro.url.pathname;
+const pageTitle = title === t.siteTitle ? title : `${title} · ${t.siteTitle}`;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="build-mode" content={MODE} />
+    {MODE !== 'production' && <meta name="robots" content="noindex, nofollow" />}
+    <title>{pageTitle}</title>
+    <link rel="alternate" hreflang={locale} href={new URL(here, Astro.site)} />
+    <link rel="alternate" hreflang={other} href={new URL(alternate, Astro.site)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skipToContent}</a>
+    <header class="site-header">
+      <a class="site-title" href={url(locale)}>{t.siteTitle}</a>
+      <a class="language-switch" href={alternate} hreflang={other} lang={other} data-language-switch>
+        {t.switchLanguage}
+      </a>
+      <nav aria-label={t.mainNav}>
+        <ul>
+          {RECORD_TYPES.map((type) => (
+            <li>
+              <a href={sectionUrl(locale, type)} aria-current={here.startsWith(sectionUrl(locale, type)) ? 'page' : undefined}>
+                {t.sections[type]}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+    {banner === 'draft' && <p class="banner banner-draft" role="note">{t.draftBanner}</p>}
+    {banner === 'fixture' && <p class="banner banner-fixture" role="note">{t.fixtureBanner}</p>}
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <script>
+      // Keep filter context (query string) and in-page position when switching language.
+      for (const a of document.querySelectorAll<HTMLAnchorElement>('a[data-language-switch]')) {
+        a.addEventListener('click', () => {
+          const target = new URL(a.href);
+          target.search = location.search;
+          target.hash = location.hash;
+          a.href = target.href;
+        });
+      }
+    </script>
+  </body>
+</html>

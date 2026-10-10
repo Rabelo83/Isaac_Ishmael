@@ -1,0 +1,8 @@
+id: act-example-state-a
+type: actor
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+kind: government
+authority_links:
+  - { url: "https://example.org/actors/state-a", kind: official_landing, language: en }

@@ -1,0 +1,32 @@
+{
+  "name": "isaac-ishmael",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.11.0 <25"
+  },
+  "scripts": {
+    "validate": "node scripts/validate.ts",
+    "build": "node scripts/build.ts --mode production",
+    "build:preview": "node scripts/build.ts --mode preview",
+    "build:fixtures": "node scripts/build.ts --mode fixtures",
+    "check:dist": "node scripts/check-dist.ts",
+    "check:types": "node scripts/astro-retry.ts check",
+    "serve": "node scripts/serve.ts",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "ci": "npm run validate && npm run check:types && npm test && npm run build:fixtures && npm run test:e2e && node scripts/leak-test.ts && npm run build && npm run check:dist -- --corpus content"
+  },
+  "dependencies": {
+    "astro": "7.3.8",
+    "yaml": "2.9.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.64.0",
+    "@types/node": "24.19.2",
+    "typescript": "6.0.3",
+    "vitest": "5.0.3"
+  }
+}

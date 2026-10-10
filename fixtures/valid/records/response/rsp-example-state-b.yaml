@@ -1,0 +1,17 @@
+id: rsp-example-state-b
+type: response
+review_status: published
+fixture: true
+last_substantive_review: 2026-10-10
+evidence_category: party_position
+actor: act-example-state-b
+proposal: prp-example-plan-v1
+date: { kind: exact, date: { year: 2005, era: CE, month: 2, day: 2 }, precision: day }
+timing: contemporary
+position: conditional
+citations:
+  - id: cit-response-statement
+    source: src-example-b
+    locator: { unavailable: "Unpaginated statement." }
+    relationship: supports
+    inspected_on: 2026-10-10

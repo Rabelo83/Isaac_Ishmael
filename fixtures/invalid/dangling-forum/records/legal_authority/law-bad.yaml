@@ -1,0 +1,13 @@
+id: law-bad
+type: legal_authority
+review_status: draft
+fixture: true
+evidence_category: legal
+instrument_type: judgment
+issuing_body: act-example-court
+forum: act-nobody
+date: { kind: exact, date: { year: 2010, era: CE, month: 1, day: 1 }, precision: day }
+procedural_stage: merits
+parties: [act-example-state-a]
+binding_scope: parties_and_case
+separate_opinions: []
