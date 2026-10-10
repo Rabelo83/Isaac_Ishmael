@@ -27,6 +27,7 @@ interface Copy {
   methodLink: string;
   notHeading: string;
   notList: string[];
+  trackingNote: string;
   repoHeading: string;
   repoBody: string;
   repoLink: string;
@@ -38,7 +39,7 @@ interface Copy {
 export const COPY: Record<Locale, Copy> = {
   en: {
     previewNotice:
-      'The research is forthcoming. No historical findings, legal conclusions, or source dossiers have been published yet.',
+      'Research content is forthcoming. No historical findings, legal conclusions, or source dossiers have been published yet.',
     homeLead:
       'A bilingual research project on the history of the land that includes present-day Israel, the West Bank, East Jerusalem, and Gaza, and on the rights, legal authorities, and settlement proposals connected with it.',
     purposeHeading: 'Purpose',
@@ -51,7 +52,7 @@ export const COPY: Record<Locale, Copy> = {
     areas: [
       {
         title: 'History',
-        body: 'Populations, institutions, political control, landholding, migration, and displacement from the earliest evidence to the present, with dated uncertainty.',
+        body: 'Populations, institutions, political control, landholding, migration, and displacement from the earliest evidence to the present, with dates and uncertainties clearly identified.',
       },
       {
         title: 'Maps',
@@ -86,8 +87,9 @@ export const COPY: Record<Locale, Copy> = {
     notList: [
       'Issue a verdict or rank the rights of any people.',
       'Treat any single actor as the voice of an entire population.',
-      'Offer accounts, comments, tracking, or analytics.',
+      'Offer accounts or comments.',
     ],
+    trackingNote: 'The project adds no analytics or tracking scripts.',
     repoHeading: 'Open project',
     repoBody: 'The planning documents, research standards, and source code are public.',
     repoLink: 'View the repository on GitHub',
@@ -115,7 +117,7 @@ export const COPY: Record<Locale, Copy> = {
         heading: 'Sources',
         paragraphs: [
           'The project prefers original documents where relevant: legal texts, judgments, treaties, archival records, inscriptions, excavation reports, and critical editions. Peer-reviewed scholarship supplies context. Publications by governments, movements, and mediators are treated as evidence of those bodies’ own positions. Search snippets, AI output, and unsourced graphics are never treated as final authorities.',
-          'A contested claim of fact needs independent corroboration, and serious counterevidence is sought out. Several publications repeating the same account do not count as independent sources.',
+          'For a disputed factual claim, the project seeks independent corroboration and looks for serious counterevidence. When independent corroboration is not available, the record says so and explains the limitation instead of implying certainty. Several publications repeating the same account do not count as independent sources.',
         ],
       },
       {
@@ -153,7 +155,7 @@ export const COPY: Record<Locale, Copy> = {
   },
   es: {
     previewNotice:
-      'La investigación está en curso. Todavía no se han publicado conclusiones históricas, conclusiones jurídicas ni expedientes de fuentes.',
+      'El contenido de investigación se publicará próximamente. Todavía no se han publicado conclusiones históricas, conclusiones jurídicas ni expedientes de fuentes.',
     homeLead:
       'Un proyecto de investigación bilingüe sobre la historia del territorio que comprende el actual Israel, Cisjordania, Jerusalén Oriental y Gaza, y sobre los derechos, las fuentes jurídicas y las propuestas de solución relacionadas con él.',
     purposeHeading: 'Propósito',
@@ -166,7 +168,7 @@ export const COPY: Record<Locale, Copy> = {
     areas: [
       {
         title: 'Historia',
-        body: 'Poblaciones, instituciones, control político, tenencia de la tierra, migración y desplazamiento, desde las pruebas más antiguas hasta el presente, con la incertidumbre fechada.',
+        body: 'Poblaciones, instituciones, control político, tenencia de la tierra, migración y desplazamiento, desde las pruebas más antiguas hasta el presente, con fechas e incertidumbres claramente indicadas.',
       },
       {
         title: 'Mapas',
@@ -201,8 +203,9 @@ export const COPY: Record<Locale, Copy> = {
     notList: [
       'Dictar un veredicto ni clasificar los derechos de ningún pueblo.',
       'Tratar a un solo actor como la voz de toda una población.',
-      'Ofrecer cuentas de usuario, comentarios, rastreo ni analítica.',
+      'Ofrecer cuentas de usuario ni comentarios.',
     ],
+    trackingNote: 'El proyecto no incorpora herramientas de analítica ni scripts de seguimiento.',
     repoHeading: 'Proyecto abierto',
     repoBody: 'Los documentos de planificación, las normas de investigación y el código fuente son públicos.',
     repoLink: 'Ver el repositorio en GitHub',
@@ -230,7 +233,7 @@ export const COPY: Record<Locale, Copy> = {
         heading: 'Fuentes',
         paragraphs: [
           'Cuando corresponde, el proyecto da preferencia a los documentos originales: textos jurídicos, sentencias, tratados, registros de archivo, inscripciones, informes de excavación y ediciones críticas. La investigación revisada por pares aporta el contexto. Las publicaciones de gobiernos, movimientos y mediadores se tratan como prueba de las posiciones de esos mismos organismos. Los fragmentos de buscadores, los textos generados por IA y los gráficos sin fuente nunca se tratan como autoridad definitiva.',
-          'Una afirmación de hecho controvertida necesita corroboración independiente, y se buscan activamente las pruebas en contrario de peso. Varias publicaciones que repiten el mismo relato no cuentan como fuentes independientes.',
+          'Para una afirmación de hecho controvertida, el proyecto busca corroboración independiente y pruebas en contrario de peso. Cuando no se dispone de corroboración independiente, el registro lo indica y explica esa limitación en lugar de aparentar certeza. Varias publicaciones que repiten el mismo relato no cuentan como fuentes independientes.',
         ],
       },
       {

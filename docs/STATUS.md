@@ -5,7 +5,8 @@ Last updated: 10 October 2026 (Claude Code)
 ## Current
 
 - **Live preview:** https://rabelo83.github.io/Isaac_Ishmael/ shows a bilingual landing page, home pages, and methodology pages. It contains no research content. Verified with `npm run verify:live`.
-- **Stage:** P2 was approved with corrections. Tasks 002 and 003 are done. P1, the reviewed research sample, is still absent.
+- **Stage:** Tasks 002–004 are done. Task 004 applied the corrections from the [Codex editorial review](tasks/003-codex-editorial-review.md) to the preview copy.
+- **Next milestone:** integrate the reviewed P1 research sample that Codex is preparing (three bilingual dossiers). No further infrastructure work is planned before then.
 - **Git:** `main` on GitHub is the deployed branch. Task work happens on `tech/<nnn>-…` branches. Pushes are never forced. `main` is fast-forwarded only after CI on the task branch passes.
 - **Deployment:** every push to `main` re-runs all checks and then deploys ([workflow](../.github/workflows/ci.yml)).
 
@@ -23,3 +24,4 @@ Last updated: 10 October 2026 (Claude Code)
 | [001 Technical foundation](tasks/001-technical-foundation.md) | Reviewed |
 | [002 Scaffold, schemas, validator](tasks/002-scaffold-and-validation.md) | Done |
 | [003 Pages preview](tasks/003-pages-preview.md) | Done; deployed and verified |
+| 004 Preview copy corrections | Done; deployed and verified |
