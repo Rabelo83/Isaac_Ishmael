@@ -70,6 +70,27 @@ The final `npm run ci` passed in full after the last change:
 
 Desktop and mobile screenshots of the local production build were reviewed. They are kept outside the repository.
 
-## Live verification
+## Deployment
 
-Recorded after deployment; see the next section.
+The release branch `release/016-jerusalem` passed CI (run 38185577906). `main` was then fast-forwarded from `cd62648` to `f9ade4b`, with no force. The push run 38185707329 passed its check and deploy jobs. Pages remains on the `workflow` build type.
+
+## Live verification (11 October 2026)
+
+- **`npm run verify:live`:** 88 of 88 passed against https://rabelo83.github.io/Isaac_Ishmael/. This covers the exact page set (the fixed pages plus the 4 records and their 4 section indexes), no fixture IDs or tokens, WCAG axe on every page, layout, and the new Jerusalem spec.
+- **Live browser check of 12 pages, desktop and mobile:** the EN and ES homepages, the claim, the three sources and the claims indexes.
+  - All pages returned HTTP 200.
+  - No draft banners, and no embedded images, iframes or objects.
+  - No broken internal links or citation anchors.
+  - Clicking a citation marker navigates to its entry.
+  - The language switch goes to the matching record.
+  - No English metadata strings appear on the Spanish pages.
+  - No horizontal overflow at 390 px.
+  - The first Tab focuses "Skip to content".
+- **Screenshots:** 20 live screenshots (10 pages, desktop and mobile) were reviewed. They are kept outside the repository.
+
+## Unresolved limitations
+
+- **Review.** The review is an AI editorial review by Codex. No independent human review exists, and the Spanish text is a project translation, not an official one.
+- **Copy provenance.** The Commons copy has not been matched against an official UN full-sheet download. The map's rights and the UN notification are unresolved, which is why the site provides links only.
+- **Partial inspection.** The resolution was inspected only for Part III A–B, and the original-language metadata is undetermined.
+- **Accessibility.** The full axe rule set (beyond WCAG tags) reports one best-practice `region` finding on every page: the site-wide preview notice sits outside a landmark. This is a pre-existing finding, also present on the atlas, and is not a WCAG failure. The fix would be to move the notice inside `<main>`, as Task 014 did for the draft banner. That fix is left for a separate site-wide change.

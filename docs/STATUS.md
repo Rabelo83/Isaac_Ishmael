@@ -27,4 +27,4 @@ Last updated: 11 October 2026 (Claude Code, Task 016 Jerusalem publication)
 | [002 Scaffold, schemas, validator](tasks/002-scaffold-and-validation.md) | Done |
 | [003 Pages preview](tasks/003-pages-preview.md) | Done; deployed and verified |
 | 004 Preview copy corrections | Done; deployed and verified |
-| [016 Jerusalem explanation published](tasks/016-jerusalem-publication.md) (includes 014 draft integration and 015 corrections) | Released; live verification recorded in the task record |
+| [016 Jerusalem explanation published](tasks/016-jerusalem-publication.md) (includes 014 draft integration and 015 corrections) | Done; deployed (`f9ade4b`) and verified live |
