@@ -91,3 +91,9 @@ for (const path of [EN, ES]) {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 }
+
+test('the local-only atlas preview is not part of the published site', async ({ request }) => {
+  for (const p of ['/Isaac_Ishmael/en/atlas/', '/Isaac_Ishmael/es/atlas/']) {
+    expect((await request.get(p)).status(), p).toBe(404);
+  }
+});

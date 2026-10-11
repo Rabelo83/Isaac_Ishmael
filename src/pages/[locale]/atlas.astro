@@ -1,0 +1,383 @@
+---
+// Atlas preview (Task 010). Modern physical geography from Natural Earth; local preview builds only.
+import Base from '../../layouts/Base.astro';
+import { ATLAS_UI, displayName, kindOf, loadAtlas, pathOf, projection, type FeatureKind } from '../../lib/atlas.ts';
+import { LOCALES, type Locale } from '../../lib/content/constants.ts';
+import { OTHER_LOCALE, url } from '../../lib/i18n.ts';
+// Inlined rather than bundled: production builds no atlas page, so they must emit none of its CSS.
+import atlasCss from '../../styles/atlas.css?raw';
+
+export function getStaticPaths() {
+  // Never part of the published site: generated only by `npm run build:preview`.
+  if (process.env.SITE_MODE !== 'preview') return [];
+  return LOCALES.map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = ATLAS_UI[locale];
+const base = loadAtlas();
+const b = base.processing.bbox;
+const { project, width: W, height: H, kmPerUnit } = projection(b);
+type Pt = [number, number];
+
+interface Feature {
+  id: string;
+  kind: FeatureKind;
+  layer: 'lakes' | 'rivers' | 'marine';
+  name: string;
+  other: string;
+  omitted: string | null;
+  scalerank: number;
+  neIds: number[];
+  bbox: [number, number, number, number];
+}
+const extent = (pts: Pt[]): [number, number, number, number] => {
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
+  return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+};
+const features: Feature[] = [
+  ...base.marine.map((m) => {
+    const [x, y] = project(m.label_at);
+    const kind = kindOf('marine', m);
+    return {
+      id: `atl-${m.ne_ids[0]}`,
+      kind,
+      layer: 'marine' as const,
+      name: m.label_omitted ? '—' : displayName(kind, m, locale),
+      other: m.name_alt,
+      omitted: m.label_omitted ? m.label_omitted[locale] : null,
+      scalerank: m.scalerank,
+      neIds: m.ne_ids,
+      bbox: [x - 60, y - 40, x + 60, y + 40] as [number, number, number, number],
+    };
+  }),
+  ...base.lakes.map((l) => ({
+    id: `atl-${l.ne_ids[0]}`,
+    kind: 'lake' as FeatureKind,
+    layer: 'lakes' as const,
+    name: displayName('lake', l, locale),
+    other: l.name_alt,
+    omitted: null,
+    scalerank: l.scalerank,
+    neIds: l.ne_ids,
+    bbox: extent(l.rings.flat().map(project)),
+  })),
+  ...base.rivers.map((r) => {
+    const kind = kindOf('rivers', r);
+    return {
+      id: `atl-${r.ne_ids[0]}`,
+      kind,
+      layer: 'rivers' as const,
+      name: displayName(kind, r, locale),
+      other: r.name_alt,
+      omitted: null,
+      scalerank: r.scalerank,
+      neIds: r.ne_ids,
+      bbox: extent(r.lines.flat().map(project)),
+    };
+  }),
+];
+const byId = new Map(features.map((f) => [f.id, f]));
+const layerInfo = (layer: Feature['layer']) => {
+  const key = layer === 'lakes' ? 'lakes' : layer === 'rivers' ? 'rivers' : 'marine';
+  const l = base.source.layers[key];
+  return `${l.layer} (v${l.version})`;
+};
+const versions = [...new Set(Object.values(base.source.layers).map((l) => l.version))].sort().join(', ');
+
+// Only these features get a map label; every named feature is listed in the table.
+const LABELLED = new Set(['Mediterranean Sea', 'Gulf of Suez', 'Dead Sea', 'Sea of Galilee', 'Jordan', 'Suez Canal']);
+const longest = (lines: Pt[][]) => lines.reduce((m, l) => (l.length > m.length ? l : m));
+
+// Graticule every whole degree; labels sit just inside the frame.
+const lons = Array.from({ length: Math.floor(b.east) - Math.ceil(b.west) + 1 }, (_, i) => Math.ceil(b.west) + i);
+const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }, (_, i) => Math.ceil(b.south) + i);
+
+---
+
+<Base locale={locale} title={t.title} alternate={url(OTHER_LOCALE[locale], 'atlas')} description={t.lead}>
+  <style is:inline set:html={atlasCss}></style>
+  <div class="atlas">
+    <h1>{t.title}</h1>
+    <p class="lead">{t.lead}</p>
+    <p class="atlas-local" role="note"><strong>{t.localOnly}</strong></p>
+    <p class="atlas-notice" role="note">{t.notice}</p>
+
+    <div class="atlas-grid">
+      <figure class="atlas-map" aria-labelledby="atlas-map-h">
+        <figcaption class="atlas-toolbar">
+          <h2 id="atlas-map-h" class="atlas-h">{t.map}</h2>
+          <div class="atlas-zoom" role="group" aria-label={t.map}>
+            <button type="button" data-zoom="in" aria-label={t.zoomIn}>+</button>
+            <button type="button" data-zoom="out" aria-label={t.zoomOut}>−</button>
+            <button type="button" data-zoom="reset">{t.reset}</button>
+          </div>
+        </figcaption>
+        <p id="atlas-help" class="atlas-help">{t.mapHelp}</p>
+        <div class="atlas-viewport" tabindex="0" aria-describedby="atlas-help" aria-label={`${t.map}. ${t.mapHelp}`}>
+          <svg viewBox={`0 0 ${W} ${H}`} data-w={W} data-h={H} role="group" aria-labelledby="atlas-map-h" preserveAspectRatio="xMidYMid meet">
+            <rect class="sea" x="0" y="0" width={W} height={H} />
+            <g class="graticule" aria-hidden="true">
+              {lons.map((lon) => {
+                const [x] = project([lon, b.north]);
+                return <line x1={x} y1="0" x2={x} y2={H} />;
+              })}
+              {lats.map((lat) => {
+                const [, y] = project([b.west, lat]);
+                return <line x1="0" y1={y} x2={W} y2={y} />;
+              })}
+            </g>
+            <path class="coast-halo" d={pathOf(base.coast, project, false)} aria-hidden="true" />
+            <path class="land" d={pathOf(base.land, project, true)} fill-rule="evenodd" />
+            <path class="coast" d={pathOf(base.coast, project, false)} />
+            {base.lakes.map((l) => (
+              <g class="feature lake" data-id={`atl-${l.ne_ids[0]}`} role="button" tabindex="0" aria-pressed="false" aria-label={byId.get(`atl-${l.ne_ids[0]}`)!.name}>
+                <path d={pathOf(l.rings, project, true)} />
+              </g>
+            ))}
+            {base.rivers.map((r) => (
+              <g
+                class={`feature river ${kindOf('rivers', r)}`}
+                data-id={`atl-${r.ne_ids[0]}`}
+                role="button"
+                tabindex="0"
+                aria-pressed="false"
+                aria-label={byId.get(`atl-${r.ne_ids[0]}`)!.name}
+              >
+                <path class="hit" d={pathOf(r.lines, project, false)} />
+                <path class="stroke" d={pathOf(r.lines, project, false)} />
+              </g>
+            ))}
+            <g class="labels">
+              {base.rivers.filter((r) => LABELLED.has(r.name_en)).map((r) => {
+                // Horizontal labels read better than text along a winding course.
+                const line = longest(r.lines);
+                const [x, y] = project(line[Math.floor(line.length / 2)]);
+                return <text class="label label-river" x={x + 7} y={y} aria-hidden="true">{byId.get(`atl-${r.ne_ids[0]}`)!.name}</text>;
+              })}
+              {base.lakes.filter((l) => LABELLED.has(l.name_en)).map((l) => {
+                const f = byId.get(`atl-${l.ne_ids[0]}`)!;
+                return <text class="label label-lake" x={f.bbox[2] + 6} y={(f.bbox[1] + f.bbox[3]) / 2} aria-hidden="true">{f.name}</text>;
+              })}
+              {base.marine.filter((m) => LABELLED.has(m.name_en) && !m.label_omitted).map((m) => {
+                const [x, y] = project(m.label_at);
+                const f = byId.get(`atl-${m.ne_ids[0]}`)!;
+                return (
+                  <g class={`feature marine ${f.kind}`} data-id={f.id} role="button" tabindex="0" aria-pressed="false" aria-label={f.name}>
+                    <text class={`label label-${f.kind}`} x={x} y={y} text-anchor="middle">{f.name}</text>
+                  </g>
+                );
+              })}
+            </g>
+            <g class="grat-labels" aria-hidden="true">
+              {lons.map((lon) => <text x={project([lon, b.north])[0] + 3} y="12">{lon}° E</text>)}
+              {lats.map((lat) => <text x="4" y={project([b.west, lat])[1] - 3}>{lat}° N</text>)}
+            </g>
+          </svg>
+        </div>
+        <div class="atlas-furniture" aria-hidden="true">
+          <div class="scalebar" data-km-per-unit={kmPerUnit} data-km={t.km}>
+            <span class="sb-bar"><span></span><span></span></span>
+            <span class="sb-label">50 {t.km}</span>
+          </div>
+          <span class="north">↑ {t.north}</span>
+          <span class="scale-note">{t.scale}</span>
+        </div>
+      </figure>
+
+      <aside class="atlas-panel" aria-labelledby="atlas-details-h">
+        <h2 id="atlas-details-h" class="atlas-h">{t.details}</h2>
+        <div id="atlas-details" aria-live="polite"><p class="muted">{t.detailsEmpty}</p></div>
+        <h2 class="atlas-h atlas-h-sub">{t.attributionHeading}</h2>
+        <p class="attribution">
+          {t.attribution} ({versions}), {t.accessed} {base.source.accessed}.{' '}
+          <a href={base.source.homepage} rel="noopener">naturalearthdata.com</a>
+        </p>
+        <h3 class="atlas-h atlas-h-sub">{t.processing}</h3>
+        <p class="muted small">{t.processingBody}</p>
+      </aside>
+    </div>
+
+    <section class="atlas-table" aria-labelledby="atlas-table-h">
+      <h2 id="atlas-table-h" class="atlas-h">{t.table}</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{t.name}</th>
+              <th scope="col">{t.type}</th>
+              <th scope="col">{t.otherName}</th>
+              <th scope="col">{t.layer}</th>
+              <th scope="col">{t.ids}</th>
+              <th scope="col"><span class="visually-hidden">{t.show}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {features.map((f) => (
+              <tr data-id={f.id}>
+                <th scope="row">{f.omitted ? <em>{t.labelOmitted}</em> : f.name}</th>
+                <td>{t.kinds[f.kind]}</td>
+                <td>{f.omitted ?? (f.other || '—')}</td>
+                <td><code>{layerInfo(f.layer)}</code></td>
+                <td>{f.neIds.join(', ')}</td>
+                <td><button type="button" data-show={f.id} data-bbox={f.bbox.join(',')}>{t.show}</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {features.map((f) => (
+      <template id={`atlas-detail-${f.id}`}>
+        <h3>{f.omitted ? t.labelOmitted : f.name}</h3>
+        <dl class="meta">
+          <dt>{t.type}</dt><dd>{t.kinds[f.kind]}</dd>
+          {f.omitted && (<><dt>{t.labelOmitted}</dt><dd>{f.omitted}</dd></>)}
+          {f.other && !f.omitted && (<><dt>{t.otherName}</dt><dd>{f.other}</dd></>)}
+          <dt>{t.layer}</dt><dd><code>{layerInfo(f.layer)}</code></dd>
+          <dt>{t.ids}</dt><dd>{f.neIds.join(', ')}</dd>
+        </dl>
+      </template>
+    ))}
+  </div>
+
+  <script>
+    // Pan and zoom by changing the SVG viewBox; no map library. Labels and strokes keep
+    // their on-screen size at any zoom and screen width (CSS reads --z).
+    const root = document.querySelector<HTMLElement>('.atlas')!;
+    const viewport = root.querySelector<HTMLElement>('.atlas-viewport')!;
+    const svg = viewport.querySelector<SVGSVGElement>('svg')!;
+    const details = document.getElementById('atlas-details')!;
+    const W = Number(svg.dataset.w);
+    const H = Number(svg.dataset.h);
+    const MAX_ZOOM = 8;
+    let view = { x: 0, y: 0, w: W, h: H };
+
+    function apply() {
+      view.w = Math.min(W, Math.max(W / MAX_ZOOM, view.w));
+      view.h = view.w * (H / W);
+      view.x = Math.min(W - view.w, Math.max(0, view.x));
+      view.y = Math.min(H - view.h, Math.max(0, view.y));
+      svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+      updateScale();
+    }
+    const scale = root.querySelector<HTMLElement>('.scalebar')!;
+    function updateScale() {
+      const pxPerUnit = svg.getBoundingClientRect().width / view.w;
+      // Labels are sized in screen pixels: CSS divides by --z (screen pixels per map unit).
+      svg.style.setProperty('--z', String(pxPerUnit));
+      // Smaller maps (phones) get proportionally smaller labels, down to a readable floor in CSS.
+      svg.style.setProperty('--s', String(Math.min(1, Math.max(0.6, svg.getBoundingClientRect().width / 900))));
+      const kmPerPx = Number(scale.dataset.kmPerUnit) / pxPerUnit;
+      // Largest round distance that fits in about 140 px.
+      const km = [500, 200, 100, 50, 20, 10, 5, 2, 1].find((d) => d / kmPerPx <= 140) ?? 1;
+      scale.style.setProperty('--sb-width', `${Math.round(km / kmPerPx)}px`);
+      scale.querySelector('.sb-label')!.textContent = `${km} ${scale.dataset.km}`;
+    }
+    new ResizeObserver(() => updateScale()).observe(svg);
+    function zoomAt(factor: number, cx = view.x + view.w / 2, cy = view.y + view.h / 2) {
+      const w = view.w / factor;
+      view = { x: cx - ((cx - view.x) * w) / view.w, y: cy - ((cy - view.y) * w) / view.w, w, h: view.h };
+      apply();
+    }
+    function pan(dx: number, dy: number) {
+      view.x += dx * view.w;
+      view.y += dy * view.h;
+      apply();
+    }
+    function fit([x0, y0, x1, y1]: number[]) {
+      const pad = 40;
+      const w = Math.max(x1 - x0 + pad * 2, ((y1 - y0 + pad * 2) * W) / H, W / MAX_ZOOM);
+      view = { x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - (w * H) / W / 2, w, h: 0 };
+      apply();
+    }
+    function toSvg(ev: { clientX: number; clientY: number }) {
+      const r = svg.getBoundingClientRect();
+      const scale = Math.min(r.width / view.w, r.height / view.h);
+      return [view.x + (ev.clientX - r.left) / scale, view.y + (ev.clientY - r.top) / scale];
+    }
+
+    function select(id: string) {
+      const tpl = document.getElementById(`atlas-detail-${id}`) as HTMLTemplateElement | null;
+      if (!tpl) return;
+      root.querySelectorAll<HTMLElement | SVGElement>('[data-id]').forEach((el) => {
+        const on = el.dataset.id === id;
+        el.classList.toggle('is-selected', on);
+        if (el.hasAttribute('aria-pressed')) el.setAttribute('aria-pressed', String(on));
+      });
+      details.replaceChildren(tpl.content.cloneNode(true));
+    }
+
+    root.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        if (btn.dataset.zoom === 'in') zoomAt(1.6);
+        else if (btn.dataset.zoom === 'out') zoomAt(1 / 1.6);
+        else fit([0, 0, W, H]);
+      }),
+    );
+    viewport.addEventListener('keydown', (ev) => {
+      if (ev.target !== viewport) return;
+      const step = 0.15;
+      const keys: Record<string, () => void> = {
+        ArrowLeft: () => pan(-step, 0),
+        ArrowRight: () => pan(step, 0),
+        ArrowUp: () => pan(0, -step),
+        ArrowDown: () => pan(0, step),
+        '+': () => zoomAt(1.6),
+        '=': () => zoomAt(1.6),
+        '-': () => zoomAt(1 / 1.6),
+        '0': () => fit([0, 0, W, H]),
+      };
+      if (keys[ev.key]) {
+        ev.preventDefault();
+        keys[ev.key]();
+      }
+    });
+    viewport.addEventListener(
+      'wheel',
+      (ev) => {
+        ev.preventDefault();
+        const [x, y] = toSvg(ev);
+        zoomAt(ev.deltaY < 0 ? 1.25 : 1 / 1.25, x, y);
+      },
+      { passive: false },
+    );
+    let drag: { x: number; y: number; vx: number; vy: number } | null = null;
+    viewport.addEventListener('pointerdown', (ev) => {
+      if ((ev.target as Element).closest('[role="button"]')) return;
+      drag = { x: ev.clientX, y: ev.clientY, vx: view.x, vy: view.y };
+      viewport.setPointerCapture(ev.pointerId);
+    });
+    viewport.addEventListener('pointermove', (ev) => {
+      if (!drag) return;
+      const r = svg.getBoundingClientRect();
+      const scale = Math.min(r.width / view.w, r.height / view.h);
+      view.x = drag.vx - (ev.clientX - drag.x) / scale;
+      view.y = drag.vy - (ev.clientY - drag.y) / scale;
+      apply();
+    });
+    viewport.addEventListener('pointerup', () => (drag = null));
+
+    root.addEventListener('click', (ev) => {
+      const show = (ev.target as Element).closest<HTMLElement>('[data-show]');
+      if (show) {
+        fit(show.dataset.bbox!.split(',').map(Number));
+        select(show.dataset.show!);
+        viewport.scrollIntoView({ block: 'nearest' });
+        return;
+      }
+      const feature = (ev.target as Element).closest<SVGElement>('[role="button"][data-id]');
+      if (feature) select(feature.dataset.id!);
+    });
+    svg.addEventListener('keydown', (ev) => {
+      const feature = (ev.target as Element).closest<SVGElement>('[role="button"][data-id]');
+      if (feature && (ev.key === 'Enter' || ev.key === ' ')) {
+        ev.preventDefault();
+        select(feature.dataset.id!);
+      }
+    });
+    apply();
+  </script>
+</Base>

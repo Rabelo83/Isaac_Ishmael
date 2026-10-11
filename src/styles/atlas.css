@@ -1,0 +1,107 @@
+/* Atlas preview (Task 010): muted historical-atlas styling. */
+:root {
+  --at-sea: #d7e3e6;
+  --at-land: #eee5cf;
+  --at-coast: #7d6f52;
+  --at-water-line: #4f7f96;
+  --at-lake: #c7dbe2;
+  --at-grat: #b9c4c4;
+  --at-label-sea: #3f6577;
+  --at-label-land: #5a4a2c;
+  --at-sel: #b4530a;
+  --at-frame: #6b5d40;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --at-sea: #17252c;
+    --at-land: #2b281f;
+    --at-coast: #a8987a;
+    --at-water-line: #7fb2c9;
+    --at-lake: #20343d;
+    --at-grat: #34444a;
+    --at-label-sea: #9cc3d4;
+    --at-label-land: #d9c8a4;
+    --at-sel: #f59e0b;
+    --at-frame: #8c7d5d;
+  }
+}
+
+main:has(.atlas) { max-width: 80rem; }
+/* Marker: the production scan fails if this preview-only stylesheet ever ships. */
+.atlas { --build-scope: "preview-only"; }
+.atlas .lead { margin-bottom: 0.4rem; }
+.atlas-local { font-size: 0.95rem; background: var(--draft-bg); padding: 0.5rem 0.75rem; border-radius: 4px; }
+.atlas-notice { border-left: 4px solid var(--at-frame); padding: 0.5rem 0.75rem; font-size: 0.95rem; color: var(--muted); }
+.atlas-h { font-size: 1.1rem; margin: 0 0 0.5rem; }
+.atlas-h-sub { margin-top: 1.2rem; font-size: 1rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.muted { color: var(--muted); }
+.small { font-size: 0.9rem; }
+
+.atlas-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; margin-top: 1rem; }
+@media (min-width: 62rem) {
+  .atlas-grid { grid-template-columns: minmax(0, 1fr) 19rem; align-items: start; }
+}
+.atlas-map, .atlas-panel { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 0.9rem; }
+.atlas-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.atlas-zoom { display: flex; gap: 0.35rem; }
+.atlas-zoom button {
+  font: inherit; min-width: 2.4rem; height: 2.4rem; padding: 0 0.7rem; cursor: pointer;
+  border: 1px solid var(--at-frame); border-radius: 4px; background: var(--bg); color: var(--text);
+}
+.atlas-help { font-size: 0.88rem; color: var(--muted); margin: 0.4rem 0 0.6rem; }
+.atlas-viewport {
+  border: 3px double var(--at-frame); border-radius: 2px; overflow: hidden; touch-action: none; cursor: grab;
+  background: var(--at-sea);
+}
+.atlas-viewport:active { cursor: grabbing; }
+.atlas-viewport:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.atlas-viewport svg { display: block; width: 100%; height: auto; --z: 1; }
+
+.atlas .sea { fill: var(--at-sea); }
+.atlas .land { fill: var(--at-land); }
+.atlas .coast { fill: none; stroke: var(--at-coast); stroke-width: 1.1; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.atlas .graticule line { stroke: var(--at-grat); stroke-width: 0.6; stroke-dasharray: 3 4; vector-effect: non-scaling-stroke; }
+.atlas .grat-labels text { font-size: calc(max(11px, 10px * var(--s, 1)) / var(--z)); fill: var(--muted); font-family: system-ui, sans-serif; }
+.atlas .feature { cursor: pointer; outline: none; }
+.atlas .lake path { fill: var(--at-lake); stroke: var(--at-water-line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+.atlas .river .stroke { fill: none; stroke: var(--at-water-line); stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.atlas .river.canal .stroke { stroke-dasharray: 5 3; stroke-width: 1.3; }
+.atlas .river .hit { fill: none; stroke: transparent; stroke-width: 12; vector-effect: non-scaling-stroke; }
+.atlas .feature:hover .stroke, .atlas .feature:hover path { stroke-width: 2.6; }
+.atlas .feature:focus-visible .stroke, .atlas .feature:focus-visible path { stroke: var(--focus); stroke-width: 3; }
+.atlas .feature:focus-visible .label { fill: var(--focus); }
+.atlas .feature.is-selected .stroke, .atlas .lake.is-selected path { stroke: var(--at-sel); stroke-width: 3; }
+.atlas .feature.is-selected .label { fill: var(--at-sel); }
+
+.atlas .label { font-family: Georgia, 'Times New Roman', serif; font-style: italic; paint-order: stroke; stroke-linejoin: round; }
+.atlas .label-sea { font-size: calc(max(11px, 26px * var(--s, 1)) / var(--z)); letter-spacing: calc(4px * var(--s, 1) / var(--z)); fill: var(--at-label-sea); stroke: var(--at-sea); stroke-width: calc(3px / var(--z)); }
+.atlas .label-gulf { font-size: calc(max(11px, 14px * var(--s, 1)) / var(--z)); fill: var(--at-label-sea); stroke: var(--at-sea); stroke-width: calc(3px / var(--z)); }
+.atlas .label-lake { font-size: calc(max(11px, 14px * var(--s, 1)) / var(--z)); fill: var(--at-label-sea); stroke: var(--at-land); stroke-width: calc(3px / var(--z)); }
+.atlas .label-river { font-size: calc(max(11px, 13px * var(--s, 1)) / var(--z)); fill: var(--at-water-line); stroke: var(--at-land); stroke-width: calc(3px / var(--z)); letter-spacing: calc(1px * var(--s, 1) / var(--z)); }
+
+.atlas-furniture { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+
+
+
+
+
+.atlas-panel h3 { font-size: 1.05rem; margin: 0.2rem 0 0.4rem; }
+.atlas-panel dl.meta { grid-template-columns: 1fr; gap: 0; font-size: 0.92rem; }
+.atlas-panel dl.meta dt { margin-top: 0.35rem; }
+.attribution { font-size: 0.9rem; }
+
+.atlas-table { margin-top: 1.25rem; }
+.table-scroll { overflow-x: auto; }
+.atlas-table table { min-width: 44rem; font-size: 0.93rem; }
+.atlas-table tr.is-selected { background: var(--preview-bg); }
+.atlas-table button { font: inherit; cursor: pointer; padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--accent); background: var(--surface); color: var(--link); }
+
+.atlas .coast-halo { fill: none; stroke: #bdd3da; stroke-width: 7; stroke-linejoin: round; vector-effect: non-scaling-stroke; opacity: 0.7; }
+@media (prefers-color-scheme: dark) { .atlas .coast-halo { stroke: #24414c; } }
+.scalebar { display: flex; flex-direction: column; gap: 0.15rem; }
+.sb-bar { display: flex; width: var(--sb-width, 100px); height: 0.4rem; border: 1px solid var(--at-frame); }
+.sb-bar span { flex: 1; background: var(--at-frame); }
+.sb-bar span + span { background: var(--surface); }
+.sb-label, .north { font-variant-numeric: tabular-nums; }
+.north { font-weight: 700; color: var(--at-frame); }

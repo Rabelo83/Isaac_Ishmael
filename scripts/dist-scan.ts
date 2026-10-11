@@ -33,6 +33,8 @@ export function scanDist(dist: string, corpusRoot: string): ScanResult {
 
   // Strings that would only appear if a withheld record leaked.
   const forbidden = new Map<string, string>([[FIXTURE_TOKEN, 'fixture token']]);
+  // Preview-only assets (for example the Task 010 atlas stylesheet) carry this marker.
+  forbidden.set('preview-only', 'preview-only asset');
   const expected = new Set<string>();
   let withheld = 0;
   for (const { record } of corpus.records.values()) {

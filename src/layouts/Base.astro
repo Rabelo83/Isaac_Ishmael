@@ -4,6 +4,7 @@ import { COPY, REPOSITORY_URL, SITE_STAGE } from '../lib/copy.ts';
 import { OTHER_LOCALE, UI, pageUrl, sectionUrl, url } from '../lib/i18n.ts';
 import { MODE, visibleTypes } from '../lib/site.ts';
 import { DEMO_SLUG, DEMO_UI } from '../lib/demo.ts';
+import { ATLAS_UI } from '../lib/atlas.ts';
 import '../styles/base.css';
 
 interface Props {
@@ -24,6 +25,8 @@ const nav = [
   { href: pageUrl(locale, 'methodology'), label: t.methodology },
   ...(await visibleTypes()).map((type) => ({ href: sectionUrl(locale, type), label: t.sections[type] })),
   { href: url(locale, 'demo', DEMO_SLUG[locale]), label: DEMO_UI[locale].navLabel },
+  // Local preview builds only: the Task 010 atlas preview.
+  ...(MODE === 'preview' ? [{ href: url(locale, 'atlas'), label: ATLAS_UI[locale].navLabel }] : []),
 ];
 ---
 
