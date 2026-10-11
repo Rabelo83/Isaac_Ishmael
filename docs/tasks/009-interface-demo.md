@@ -49,7 +49,12 @@ Then open http://localhost:4321/Isaac_Ishmael/en/demo/timeline-map/. The product
   - the earlier prototype's fixture IDs and text are absent.
 
   The first run flagged demo event IDs that contained prototype fixture IDs as substrings, for example `demo-event-claim`. They were renamed (`demo-ev-*`) instead of loosening the scan.
-- **History scan of the release branch:** see the commit and the checks recorded in [STATUS](../STATUS.md).
+- **History scan of the release branch:** passes. The checks were:
+  - `main..release` holds only the Task 009 commit, which touches 15 demo, documentation and test paths.
+  - No development branch (Task 005, 006 or 008) is an ancestor of the release branch.
+  - No research-record or `research/` paths exist in the tree.
+  - All 262 reachable blobs were searched for research-specific strings. The one hit is the word "unispal" in a URL inside the P0 planning document `docs/RESEARCH_PLAN.md`, which has been public on `main` since Task 003. It is not unpublished research.
+- **Synchronization:** no OneDrive conflict copies (`*-Ale*`) were found in the main repository or the release worktree during this task.
 
 ## Screenshots for review
 
