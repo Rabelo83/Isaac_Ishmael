@@ -1,0 +1,22 @@
+id: src-un-map-104b-commons-copy
+type: source
+review_status: published
+last_substantive_review: 2026-10-11
+fixture: false
+# English title as printed on the sheet; the sheet also prints a French title.
+title: "City of Jerusalem: Boundaries Proposed by the Ad Hoc Committee on the Palestinian Question"
+creators:
+  - { name: "United Nations", role: issuer }
+doc_type: map_reproduction_third_party_hosted
+# Issue date printed in the map's footer; not the upload date of the hosted copy.
+date: { kind: exact, date: { year: 1947, era: CE, month: 11 }, precision: month }
+edition_version:
+  en: "Map No. 104 (b), November 1947, as printed in the footer (Annex B). Reproduction hosted by Wikimedia Commons; not matched against an official UN full-sheet download"
+  es: "Mapa n.º 104 (b), noviembre de 1947, según el pie impreso (Anexo B). Reproducción alojada en Wikimedia Commons; no se ha cotejado con una descarga oficial de la hoja completa de la ONU"
+original_language: mul
+links:
+  - { url: "https://commons.wikimedia.org/wiki/File:Plan_of_partition_with_economic_union_-_Annex_B.pdf", kind: archive, language: en }
+accessed_on: 2026-10-11
+access_status: open
+inspection: full_text
+reuse: link_only

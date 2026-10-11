@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { LOCALES, type Locale } from '../../lib/content/constants.ts';
 import { COPY, REPOSITORY_URL } from '../../lib/copy.ts';
-import { OTHER_LOCALE, UI, pageUrl, url } from '../../lib/i18n.ts';
+import { OTHER_LOCALE, UI, pageUrl, recordUrl, sectionUrl, url } from '../../lib/i18n.ts';
+import { allRecords, titleFor } from '../../lib/site.ts';
 import { DEMO_SLUG, DEMO_UI } from '../../lib/demo.ts';
 import { ATLAS_UI } from '../../lib/atlas.ts';
 
@@ -14,6 +15,14 @@ const t = UI[locale];
 const c = COPY[locale];
 const d = DEMO_UI[locale];
 const a = ATLAS_UI[locale];
+// Published explanations only (never drafts, even in a preview build); sources are reached from each page.
+const publishedRecords = (await allRecords()).filter((r) => r.review_status === 'published');
+const publishedTypes = new Set(publishedRecords.map((r) => r.type));
+const published = await Promise.all(
+  publishedRecords
+    .filter((r) => r.type !== 'source')
+    .map(async (r) => ({ href: recordUrl(locale, r.type, r.id), title: await titleFor(locale, r.id) })),
+);
 ---
 
 <Base locale={locale} title={t.siteTitle} alternate={url(OTHER_LOCALE[locale])} description={c.homeLead}>
@@ -33,11 +42,22 @@ const a = ATLAS_UI[locale];
         <li class="area">
           <h3>{a.title}</h3>
           <p>{a.body}</p>
-          <p class="status-tag">{c.forthcoming}</p>
+          {a.section && publishedTypes.has(a.section)
+            ? <p><a href={sectionUrl(locale, a.section)}>{c.openSection}</a></p>
+            : <p class="status-tag">{c.forthcoming}</p>}
         </li>
       ))}
     </ul>
   </section>
+
+  {published.length > 0 && (
+    <section aria-labelledby="published">
+      <h2 id="published">{c.publishedHeading}</h2>
+      <p>{c.publishedIntro}</p>
+      <ul>{published.map((p) => <li><a href={p.href}>{p.title}</a></li>)}</ul>
+      <p><a href={sectionUrl(locale, 'source')}>{c.publishedSources}</a></p>
+    </section>
+  )}
 
   <section aria-labelledby="atlas" class="demo-callout">
     <h2 id="atlas">{a.homeHeading}</h2>

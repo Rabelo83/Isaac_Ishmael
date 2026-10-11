@@ -27,7 +27,13 @@ function files(dir: string): string[] {
   });
 }
 
-export function scanDist(dist: string, corpusRoot: string): ScanResult {
+/**
+ * `ownCorpus`: the build was made from `corpusRoot`, so its record pages must match the
+ * releasable set exactly. Scanning against another corpus (fixtures over a content build)
+ * still forbids that corpus's withheld IDs, titles, summaries, the fixture token, and any
+ * page for one of its records; it cannot expect pages for IDs it does not hold.
+ */
+export function scanDist(dist: string, corpusRoot: string, ownCorpus = true): ScanResult {
   const { corpus, issues } = validateCorpus(loadCorpus(corpusRoot), rootKindOf(corpusRoot));
   if (issues.length) throw new Error(`input corpus ${corpusRoot} is invalid; run npm run validate`);
 
@@ -75,7 +81,10 @@ export function scanDist(dist: string, corpusRoot: string): ScanResult {
       if (body.includes(needle)) problems.push(`${rel}: contains ${why} (${needle.slice(0, 60)})`);
     }
   }
-  for (const id of recordPages) if (!expected.has(id)) problems.push(`page for non-releasable record ${id}`);
-  for (const id of expected) if (!recordPages.has(id)) problems.push(`releasable record ${id} has no page`);
+  for (const id of recordPages) {
+    if (expected.has(id)) continue;
+    if (ownCorpus || corpus.records.has(id)) problems.push(`page for non-releasable record ${id}`);
+  }
+  if (ownCorpus) for (const id of expected) if (!recordPages.has(id)) problems.push(`releasable record ${id} has no page`);
   return { problems, recordPages, expected, withheld, filesScanned: all.length };
 }

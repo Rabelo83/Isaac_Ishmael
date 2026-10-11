@@ -15,7 +15,7 @@
     "serve": "node scripts/serve.ts",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "ci": "npm run validate && npm run check:types && npm test && npm run build:fixtures && npm run test:e2e && node scripts/leak-test.ts && npm run build && npm run check:dist -- --corpus content && npm run check:dist -- --corpus fixtures/valid && npm run test:e2e:prod",
+    "ci": "npm run validate && npm run check:types && npm test && npm run build:fixtures && npm run test:e2e && node scripts/leak-test.ts && npm run build && npm run check:dist -- --corpus content && npm run check:dist -- --corpus fixtures/valid --foreign && npm run test:e2e:prod",
     "test:e2e:prod": "playwright test -c playwright.production.config.ts",
     "verify:live": "node scripts/verify-live.ts",
     "geo:atlas-base": "node scripts/geo/build-atlas-base.ts"

@@ -3,7 +3,8 @@ import { arg } from './args.ts';
 import { scanDist } from './dist-scan.ts';
 
 const corpus = arg('corpus', 'content')!;
-const result = scanDist(arg('dist', 'dist')!, corpus);
+// --foreign: the build was made from a different corpus (see scanDist).
+const result = scanDist(arg('dist', 'dist')!, corpus, !process.argv.includes('--foreign'));
 if (result.problems.length) {
   console.error(`✗ dist leak scan against ${corpus}: ${result.problems.length} problem(s)`);
   for (const p of result.problems.slice(0, 50)) console.error(`  ${p}`);

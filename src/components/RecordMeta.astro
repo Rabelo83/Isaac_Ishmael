@@ -3,7 +3,7 @@ import type { Locale } from '../lib/content/constants.ts';
 import { PROPOSAL_TOPICS } from '../lib/content/constants.ts';
 import { formatDate } from '../lib/content/dates.ts';
 import type { ContentRecord, TextFrontmatter } from '../lib/content/schemas.ts';
-import { UI, label } from '../lib/i18n.ts';
+import { UI, label, languageLabel, localized } from '../lib/i18n.ts';
 import RecordLink from './RecordLink.astro';
 import NotApplicable from './NotApplicable.astro';
 
@@ -25,21 +25,22 @@ const na = (v: unknown): v is { not_applicable: string } =>
   <dt>{t.reviewStatus}</dt><dd>{label(locale, r.review_status)}</dd>
   {r.last_substantive_review && (<><dt>{t.lastReview}</dt><dd><time datetime={r.last_substantive_review}>{r.last_substantive_review}</time></dd></>)}
   {'date' in r && r.date && (<><dt>{t.date}</dt><dd>{formatDate(r.date, locale)}</dd></>)}
-  {fm && (<><dt>{t.translationStatus}</dt><dd>{label(locale, fm.translation_status)}</dd></>)}
+  {fm && (<><dt>{t.translationStatus}</dt><dd>{label(locale, fm.translation_status)}{fm.reviewed_by && fm.reviewed_on && <>; {t.reviewedBy} {fm.reviewed_by}, <time datetime={fm.reviewed_on}>{fm.reviewed_on}</time></>}</dd></>)}
 
   {r.type === 'source' && (
     <>
       <dt>{t.creators}</dt><dd>{r.creators.map((c) => c.name).join('; ')}</dd>
-      <dt>{t.originalLanguage}</dt><dd><code>{r.original_language}</code></dd>
+      {r.edition_version && (<><dt>{t.edition}</dt><dd>{localized(locale, r.edition_version)}</dd></>)}
+      <dt>{t.originalLanguage}</dt><dd>{languageLabel(locale, r.original_language)} (<code>{r.original_language}</code>)</dd>
       <dt>{t.accessStatus}</dt><dd>{label(locale, r.access_status)}</dd>
       <dt>{t.inspection}</dt><dd>{label(locale, r.inspection)}</dd>
-      <dt>{t.reuse}</dt><dd>{r.reuse}</dd>
+      <dt>{t.reuse}</dt><dd>{label(locale, r.reuse)}</dd>
       {r.accessed_on && (<><dt>{t.accessedOn}</dt><dd><time datetime={r.accessed_on}>{r.accessed_on}</time></dd></>)}
       <dt>{t.links}</dt>
       <dd>
         <ul>
           {r.links.map((l) => (
-            <li><a href={l.url} hreflang={l.language} rel="noopener">{l.url}</a> (<code>{l.kind}</code>, <code>{l.language}</code>{l.translation_status && <>, <code>{l.translation_status}</code></>})</li>
+            <li><a href={l.url} hreflang={l.language} rel="noopener">{l.url}</a> ({label(locale, l.kind)}; {languageLabel(locale, l.language)}{l.translation_status && <>; {label(locale, l.translation_status)}</>})</li>
           ))}
           {r.doi && <li><a href={`https://doi.org/${r.doi}`} rel="noopener">doi:{r.doi}</a></li>}
         </ul>

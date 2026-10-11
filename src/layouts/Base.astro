@@ -65,10 +65,11 @@ const nav = [
     {SITE_STAGE === 'preview' && MODE === 'production' && (
       <p class="banner banner-preview" role="note"><strong>{t.previewLabel}.</strong> {COPY[locale].previewNotice}</p>
     )}
-    {banner === 'draft' && <p class="banner banner-draft" role="note">{t.draftBanner}</p>}
     {banner === 'fixture' && <p class="banner banner-fixture" role="note">{t.fixtureBanner}</p>}
     {banner === 'demo' && <p class="banner banner-demo" role="note"><strong>{DEMO_UI[locale].navLabel}.</strong> {DEMO_UI[locale].banner}</p>}
     <main id="main" tabindex="-1">
+      {/* Inside main so the draft label sits in a landmark and follows the skip link. */}
+      {banner === 'draft' && <p class="banner banner-draft" role="note">{t.draftBanner}</p>}
       <slot />
     </main>
     <footer class="site-footer">

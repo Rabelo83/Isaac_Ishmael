@@ -97,6 +97,8 @@ export const UI = {
     topic: 'Topic',
     state: 'State',
     notApplicable: 'Not applicable',
+    edition: 'Edition or version',
+    reviewedBy: 'reviewed by',
   },
   es: {
     siteTitle: 'Isaac e Ismael',
@@ -163,6 +165,8 @@ export const UI = {
     topic: 'Tema',
     state: 'Estado',
     notApplicable: 'No aplicable',
+    edition: 'Edición o versión',
+    reviewedBy: 'revisada por',
   },
 } as const;
 
@@ -209,6 +213,27 @@ export const VALUE_LABELS: Record<Locale, Record<string, string>> = {
     archival: 'Archival reference',
     timestamp: 'Timestamp',
     other: 'Other',
+    // link kinds
+    official_landing: 'Official landing page',
+    direct_document: 'Direct document',
+    catalog: 'Catalog record',
+    archive: 'Archived or third-party copy',
+    open_version: 'Open-access version',
+    // link translation statuses
+    official: 'Official translation',
+    unofficial: 'Unofficial translation',
+    project: 'Project translation',
+    // reuse
+    link_only: 'Linked and summarized only; not reproduced on this site',
+    // languages (prefixed to avoid clashes with other values)
+    'lang:en': 'English',
+    'lang:es': 'Spanish',
+    'lang:fr': 'French',
+    'lang:ar': 'Arabic',
+    'lang:he': 'Hebrew',
+    'lang:mul': 'Multiple languages',
+    'lang:und': 'Not determined',
+
   },
   es: {
     textual_tradition: 'Tradición textual o religiosa',
@@ -251,7 +276,31 @@ export const VALUE_LABELS: Record<Locale, Record<string, string>> = {
     archival: 'Referencia de archivo',
     timestamp: 'Marca de tiempo',
     other: 'Otro',
+    official_landing: 'Página oficial',
+    direct_document: 'Documento directo',
+    catalog: 'Registro de catálogo',
+    archive: 'Copia archivada o alojada por terceros',
+    open_version: 'Versión de acceso abierto',
+    official: 'Traducción oficial',
+    unofficial: 'Traducción no oficial',
+    project: 'Traducción del proyecto',
+    link_only: 'Solo se enlaza y resume; no se reproduce en este sitio',
+    'lang:en': 'Inglés',
+    'lang:es': 'Español',
+    'lang:fr': 'Francés',
+    'lang:ar': 'Árabe',
+    'lang:he': 'Hebreo',
+    'lang:mul': 'Varios idiomas',
+    'lang:und': 'No determinado',
+
   },
 };
 
 export const label = (locale: Locale, value: string) => VALUE_LABELS[locale][value] ?? value;
+
+/** Language name for a BCP 47 tag, falling back to the tag itself. */
+export const languageLabel = (locale: Locale, tag: string) => VALUE_LABELS[locale][`lang:${tag}`] ?? tag;
+
+/** Resolves explanatory text stored once or per site language. */
+export const localized = (locale: Locale, value: string | Record<Locale, string>) =>
+  typeof value === 'string' ? value : value[locale];

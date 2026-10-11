@@ -1,9 +1,11 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type APIRequestContext } from '@playwright/test';
-import { FIXTURE_TOKEN } from '../../src/lib/content/constants.ts';
+import { FIXTURE_TOKEN, LOCALES } from '../../src/lib/content/constants.ts';
 import { loadCorpus } from '../../src/lib/content/load.ts';
-import { validateCorpus } from '../../src/lib/content/validate.ts';
+import { isReleasable } from '../../src/lib/content/select.ts';
+import { textKey, validateCorpus } from '../../src/lib/content/validate.ts';
 import { REPOSITORY_URL } from '../../src/lib/copy.ts';
+import { SECTION_SLUGS } from '../../src/lib/i18n.ts';
 
 const BASE = '/Isaac_Ishmael/';
 const PAGES = [
@@ -17,6 +19,17 @@ const PAGES = [
   `${BASE}en/atlas/`,
   `${BASE}es/atlas/`,
 ];
+
+// Published records from content/: each has a page, and its section an index, in both languages.
+const content = validateCorpus(loadCorpus('content'), 'content').corpus;
+const PUBLISHED_PAGES = [...content.records.values()]
+  .filter(({ record }) => isReleasable(record, LOCALES.map((l) => content.texts.get(textKey(l, record.id)))))
+  .flatMap(({ record }) =>
+    LOCALES.flatMap((l) => {
+      const section = `${BASE}${l}/${SECTION_SLUGS[record.type][l]}/`;
+      return [section, `${section}${record.id}/`];
+    }),
+  );
 
 // Strings that must never be served: the fixture token and every fixture ID.
 const fixtureIds = [...validateCorpus(loadCorpus('fixtures/valid'), 'fixtures').corpus.records.keys()];
@@ -55,8 +68,8 @@ test('every internal link and asset resolves, and nothing withheld is served', a
       expect(body, path).not.toMatch(/Pending research|Investigación pendiente/);
     }
   }
-  // Only the preview pages exist: no record or section pages.
-  expect([...site.keys()].filter((p) => p.endsWith('/')).sort()).toEqual([...PAGES].sort());
+  // Exactly the fixed pages plus published records and their sections: nothing else.
+  expect([...site.keys()].filter((p) => p.endsWith('/')).sort()).toEqual([...new Set([...PAGES, ...PUBLISHED_PAGES])].sort());
 });
 
 test('bilingual root offers both languages and the preview notice', async ({ page }) => {

@@ -1,0 +1,22 @@
+id: src-un-map-104b-catalog
+type: source
+review_status: published
+last_substantive_review: 2026-10-11
+fixture: false
+# Title of the catalog web page itself, not of the map it describes.
+title: "Jerusalem/Boundaries under A/RES/181, proposed by the Ad Hoc Committee"
+creators:
+  - { name: "United Nations", role: issuer }
+doc_type: map_catalog_entry
+# No publication date for the catalog page is established. November 1947 belongs to the map.
+date: { kind: unknown }
+edition_version:
+  en: "UN web catalog entry (UNISPAL) describing Map No. 104 (b); the entry lists 29/11/1947 as the map's publication date"
+  es: "Entrada del catálogo web de la ONU (UNISPAL) que describe el mapa n.º 104 (b); la entrada indica 29/11/1947 como fecha de publicación del mapa"
+original_language: en
+links:
+  - { url: "https://www.un.org/unispal/document/auto-insert-209955/", kind: catalog, language: en }
+accessed_on: 2026-10-11
+access_status: open
+inspection: excerpt_only
+reuse: link_only

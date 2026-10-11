@@ -1,7 +1,7 @@
 // Project-authored page copy for the public preview. It describes purpose and
 // method only, drawn from docs/PROJECT_CHARTER.md, docs/RESEARCH_STANDARDS.md,
 // and docs/WEBSITE_REQUIREMENTS.md. It contains no historical or legal findings.
-import type { Locale } from './content/constants.ts';
+import type { Locale, RecordType } from './content/constants.ts';
 
 export const REPOSITORY_URL = 'https://github.com/Rabelo83/Isaac_Ishmael';
 
@@ -11,6 +11,8 @@ export const SITE_STAGE: 'preview' | 'release' = 'preview';
 interface Area {
   title: string;
   body: string;
+  /** Record section that this area links to once it holds published records. */
+  section?: RecordType;
 }
 
 interface Copy {
@@ -22,6 +24,10 @@ interface Copy {
   areasIntro: string;
   areas: Area[];
   forthcoming: string;
+  openSection: string;
+  publishedHeading: string;
+  publishedIntro: string;
+  publishedSources: string;
   methodHeading: string;
   methodSummary: string[];
   methodLink: string;
@@ -39,7 +45,7 @@ interface Copy {
 export const COPY: Record<Locale, Copy> = {
   en: {
     previewNotice:
-      'Research content is forthcoming. No historical findings, legal conclusions, or source dossiers have been published yet.',
+      'This site is in an early stage. One reviewed explanation and its sources have been published; other research content is forthcoming.',
     homeLead:
       'A bilingual research project on the history of the land that includes present-day Israel, the West Bank, East Jerusalem, and Gaza, and on the rights, legal authorities, and settlement proposals connected with it.',
     purposeHeading: 'Purpose',
@@ -48,7 +54,7 @@ export const COPY: Record<Locale, Copy> = {
       'It is an educational resource, not a tribunal. It will not issue a verdict on who deserves the land, and it does not score or rank the rights of any people.',
     ],
     areasHeading: 'Planned sections',
-    areasIntro: 'The published site will connect six areas, together with a source library. None of them contains reviewed material yet.',
+    areasIntro: 'The published site will connect six areas, together with a source library. Most of them contain no reviewed material yet; the first published explanation is listed below.',
     areas: [
       {
         title: 'History',
@@ -64,6 +70,7 @@ export const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Claims and evidence',
+        section: 'claim',
         body: 'Narrowly worded claims, each shown with its supporting, qualifying, and opposing evidence and its review status.',
       },
       {
@@ -76,6 +83,10 @@ export const COPY: Record<Locale, Copy> = {
       },
     ],
     forthcoming: 'Forthcoming',
+    openSection: 'Open this section',
+    publishedHeading: 'Published research',
+    publishedIntro: 'Reviewed explanations, each linked to its cited sources:',
+    publishedSources: 'Browse the source records',
     methodHeading: 'How the research works',
     methodSummary: [
       'Every published factual assertion will link to its source, with a precise locator such as a page, paragraph, or article where one exists.',
@@ -155,7 +166,7 @@ export const COPY: Record<Locale, Copy> = {
   },
   es: {
     previewNotice:
-      'El contenido de investigación se publicará próximamente. Todavía no se han publicado conclusiones históricas, conclusiones jurídicas ni expedientes de fuentes.',
+      'Este sitio está en una etapa inicial. Se han publicado una explicación revisada y sus fuentes; el resto del contenido de investigación se publicará próximamente.',
     homeLead:
       'Un proyecto de investigación bilingüe sobre la historia del territorio que comprende el actual Israel, Cisjordania, Jerusalén Oriental y Gaza, y sobre los derechos, las fuentes jurídicas y las propuestas de solución relacionadas con él.',
     purposeHeading: 'Propósito',
@@ -164,7 +175,7 @@ export const COPY: Record<Locale, Copy> = {
       'Es un recurso educativo, no un tribunal. No dictará un veredicto sobre quién merece el territorio y no puntúa ni clasifica los derechos de ningún pueblo.',
     ],
     areasHeading: 'Secciones previstas',
-    areasIntro: 'El sitio publicado conectará seis áreas, junto con una biblioteca de fuentes. Ninguna contiene todavía material revisado.',
+    areasIntro: 'El sitio publicado conectará seis áreas, junto con una biblioteca de fuentes. La mayoría aún no contiene material revisado; la primera explicación publicada figura más abajo.',
     areas: [
       {
         title: 'Historia',
@@ -180,6 +191,7 @@ export const COPY: Record<Locale, Copy> = {
       },
       {
         title: 'Afirmaciones y pruebas',
+        section: 'claim',
         body: 'Afirmaciones formuladas de manera acotada, cada una con las pruebas que la respaldan, la matizan o la contradicen, y con su estado de revisión.',
       },
       {
@@ -192,6 +204,10 @@ export const COPY: Record<Locale, Copy> = {
       },
     ],
     forthcoming: 'Próximamente',
+    openSection: 'Abrir esta sección',
+    publishedHeading: 'Investigación publicada',
+    publishedIntro: 'Explicaciones revisadas, cada una enlazada a sus fuentes citadas:',
+    publishedSources: 'Ver los registros de fuentes',
     methodHeading: 'Cómo funciona la investigación',
     methodSummary: [
       'Cada afirmación fáctica publicada enlazará a su fuente, con un localizador preciso (página, párrafo o artículo) cuando exista.',

@@ -2,7 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import * as C from '../src/lib/content/constants.ts';
 import { renderCiteMarkers } from '../src/lib/cite.ts';
-import { SECTION_SLUGS, UI, VALUE_LABELS, recordUrl, url } from '../src/lib/i18n.ts';
+import { SECTION_SLUGS, UI, VALUE_LABELS, languageLabel, localized, recordUrl, url } from '../src/lib/i18n.ts';
+import { localizedText } from '../src/lib/content/schemas.ts';
 
 const keys = (o: object, prefix = ''): string[] =>
   Object.entries(o).flatMap(([k, v]) => (v && typeof v === 'object' ? keys(v, `${prefix}${k}.`) : [`${prefix}${k}`]));
@@ -22,6 +23,9 @@ describe('bilingual parity', () => {
       ...C.INSPECTION_LEVELS,
       ...C.DISPUTE_CONCERNS,
       ...C.LOCATOR_TYPES,
+      ...C.LINK_KINDS,
+      ...C.LINK_TRANSLATION_STATUSES,
+      'link_only',
     ];
     for (const locale of C.LOCALES) {
       expect(displayed.filter((v) => !(v in VALUE_LABELS[locale])), locale).toEqual([]);
@@ -56,5 +60,22 @@ describe('citation markers', () => {
     const cites = [{ id: 'cit-a' }, { id: 'cit-b' }] as never;
     expect(renderCiteMarkers('x :cite[cit-b]', cites, 'Cita')).toContain('href="#cit-b" aria-label="Cita 2">[2]');
     expect(() => renderCiteMarkers(':cite[cit-z]', cites, 'Cita')).toThrow();
+  });
+});
+
+describe('localized metadata', () => {
+  it('accepts one string or one string per site language, and nothing partial', () => {
+    expect(localizedText.safeParse('Single catalog page').success).toBe(true);
+    expect(localizedText.safeParse({ en: 'Single page', es: 'Página única' }).success).toBe(true);
+    expect(localizedText.safeParse({ en: 'Single page' }).success).toBe(false);
+    expect(localizedText.safeParse({ en: 'Single page', es: '' }).success).toBe(false);
+  });
+
+  it('resolves per-language text and language names', () => {
+    expect(localized('es', { en: 'Single page', es: 'Página única' })).toBe('Página única');
+    expect(localized('es', 'Shared text')).toBe('Shared text');
+    expect(languageLabel('es', 'mul')).toBe('Varios idiomas');
+    expect(languageLabel('en', 'und')).toBe('Not determined');
+    expect(languageLabel('en', 'xx')).toBe('xx');
   });
 });

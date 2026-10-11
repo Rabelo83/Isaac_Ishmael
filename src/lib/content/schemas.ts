@@ -31,6 +31,12 @@ const isoDate = z.iso.date();
 const reason = z.string().trim().min(1);
 /** BCP 47 tag, loosely checked (e.g. "en", "he", "ar", "es-419"). */
 const languageTag = z.string().regex(/^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/);
+/** Displayed explanatory text: one string, or one string per site language. */
+export const localizedText = z.union([
+  z.string().trim().min(1),
+  z.strictObject(Object.fromEntries(LOCALES.map((l) => [l, z.string().trim().min(1)])) as Record<(typeof LOCALES)[number], z.ZodString>),
+]);
+export type LocalizedText = z.infer<typeof localizedText>;
 
 /** A field that may be inapplicable to some record subtypes, with a stated reason. */
 const applicable = <T extends z.ZodType>(inner: T) =>
@@ -62,7 +68,7 @@ export type DateValue = z.infer<typeof dateValue>;
 export const locator = z.union([
   z.strictObject({ type: z.enum(LOCATOR_TYPES), value: z.string().trim().min(1) }),
   // For sources without pagination or stable sections. Never invent a locator.
-  z.strictObject({ unavailable: reason }),
+  z.strictObject({ unavailable: localizedText }),
 ]);
 
 export const citation = z.strictObject({
@@ -121,7 +127,7 @@ export const sourceRecord = z.strictObject({
     .min(1),
   doc_type: z.string().trim().min(1),
   date: dateValue,
-  edition_version: z.string().optional(),
+  edition_version: localizedText.optional(),
   original_language: languageTag,
   links: z.array(link).default([]),
   doi: z.string().regex(/^10\.\d{4,9}\/\S+$/).optional(),

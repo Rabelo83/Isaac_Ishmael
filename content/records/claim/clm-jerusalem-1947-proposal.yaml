@@ -1,0 +1,32 @@
+# Codex editorial sample; AI editorial review by Codex on 11 October 2026.
+id: clm-jerusalem-1947-proposal
+type: claim
+review_status: published
+last_substantive_review: 2026-10-11
+fixture: false
+evidence_category: legal
+date: { kind: exact, date: { year: 1947, era: CE, month: 11, day: 29 }, precision: day }
+citations:
+  - id: cit-res181-part-iii-a
+    source: src-un-ga-res-181-1947-en
+    locator: { type: page, value: "10 (III A)" }
+    relationship: supports
+    inspected_on: 2026-10-11
+  - id: cit-res181-part-iii-b
+    source: src-un-ga-res-181-1947-en
+    locator: { type: page, value: "10 (III B)" }
+    relationship: supports
+    inspected_on: 2026-10-11
+  - id: cit-annex-b-un-catalog
+    source: src-un-map-104b-catalog
+    locator:
+      unavailable:
+        en: "Single catalog web page without pagination or sections"
+        es: "Página de catálogo única, sin paginación ni secciones"
+    relationship: contextualizes
+    inspected_on: 2026-10-11
+  - id: cit-annex-b-commons-copy
+    source: src-un-map-104b-commons-copy
+    locator: { type: other, value: "MAP NO. 104 (b)" }
+    relationship: contextualizes
+    inspected_on: 2026-10-11

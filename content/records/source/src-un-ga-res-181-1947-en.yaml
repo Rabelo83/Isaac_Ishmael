@@ -1,0 +1,21 @@
+id: src-un-ga-res-181-1947-en
+type: source
+review_status: published
+last_substantive_review: 2026-10-11
+fixture: false
+# Title as printed on PDF page 1.
+title: "Resolution 181 (II). Future government of Palestine"
+creators:
+  - { name: "United Nations General Assembly", role: issuer }
+doc_type: general_assembly_resolution
+date: { kind: exact, date: { year: 1947, era: CE, month: 11, day: 29 }, precision: day }
+edition_version:
+  en: "A/RES/181(II). English reproduction hosted by the UN (UNISPAL PDF, 13 pages)"
+  es: "A/RES/181(II). Reproducción en inglés alojada por la ONU (PDF de UNISPAL, 13 páginas)"
+original_language: und
+links:
+  - { url: "https://unispal.un.org/pdfs/7F0AF2BD897689B785256C330061D253.pdf", kind: direct_document, language: en }
+accessed_on: 2026-10-11
+access_status: open
+inspection: excerpt_only
+reuse: link_only
