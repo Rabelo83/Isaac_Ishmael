@@ -3,6 +3,7 @@ import type { Locale } from '../lib/content/constants.ts';
 import { COPY, REPOSITORY_URL, SITE_STAGE } from '../lib/copy.ts';
 import { OTHER_LOCALE, UI, pageUrl, sectionUrl, url } from '../lib/i18n.ts';
 import { MODE, visibleTypes } from '../lib/site.ts';
+import { DEMO_SLUG, DEMO_UI } from '../lib/demo.ts';
 import '../styles/base.css';
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
   /** Path of the same page in the other language. */
   alternate: string;
   description?: string;
-  banner?: 'draft' | 'fixture';
+  banner?: 'draft' | 'fixture' | 'demo';
 }
 const { locale, title, alternate, description, banner } = Astro.props;
 const t = UI[locale];
@@ -22,6 +23,7 @@ const nav = [
   { href: url(locale), label: t.home },
   { href: pageUrl(locale, 'methodology'), label: t.methodology },
   ...(await visibleTypes()).map((type) => ({ href: sectionUrl(locale, type), label: t.sections[type] })),
+  { href: url(locale, 'demo', DEMO_SLUG[locale]), label: DEMO_UI[locale].navLabel },
 ];
 ---
 
@@ -62,6 +64,7 @@ const nav = [
     )}
     {banner === 'draft' && <p class="banner banner-draft" role="note">{t.draftBanner}</p>}
     {banner === 'fixture' && <p class="banner banner-fixture" role="note">{t.fixtureBanner}</p>}
+    {banner === 'demo' && <p class="banner banner-demo" role="note"><strong>{DEMO_UI[locale].navLabel}.</strong> {DEMO_UI[locale].banner}</p>}
     <main id="main" tabindex="-1">
       <slot />
     </main>

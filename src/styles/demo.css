@@ -1,0 +1,139 @@
+/* Timeline/map interface demonstration (Task 009, adapted from the Task 008 prototype). Layers differ by colour AND by pattern or line
+   style; uncertainty differs by line style and is always named in text. */
+:root {
+  --sea: #e7eef3;
+  --land: #f4efe2;
+  --land-edge: #b9ae93;
+  --l-settlement: #1d3b5c;
+  --l-control: #8a4b08;
+  --l-claim: #6b2d8f;
+  --l-ownership: #1f6b4a;
+  --l-proposal: #a3122a;
+  --sel: #d97706;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sea: #15212b;
+    --land: #23211c;
+    --land-edge: #5d5646;
+    --l-settlement: #a9c7e8;
+    --l-control: #f0a95b;
+    --l-claim: #d6a6f0;
+    --l-ownership: #7fd3a8;
+    --l-proposal: #ff8a9a;
+    --sel: #fbbf24;
+  }
+}
+
+main:has(.tm) { max-width: 78rem; }
+.tm .lead { margin-bottom: 0.5rem; }
+.tm-notice { border-left: 4px solid var(--rule); padding: 0.5rem 0.75rem; color: var(--muted); font-size: 0.95rem; }
+.tm-h3 { font-size: 1.1rem; margin: 0 0 0.5rem; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.tm-grid { display: grid; gap: 1rem; grid-template-columns: 1fr; margin-top: 1rem; }
+@media (min-width: 64rem) {
+  .tm-grid { grid-template-columns: 15rem minmax(0, 1fr) 19rem; align-items: start; }
+  .tm-panel { position: sticky; top: 0.5rem; max-height: calc(100vh - 1rem); overflow: auto; }
+}
+.tm-controls, .tm-panel, .tm-map { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 0.9rem; }
+.tm-map { margin: 0; }
+.tm-map figcaption p { margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--muted); }
+
+fieldset { border: 0; margin: 0 0 1rem; padding: 0; }
+legend { font-family: Georgia, serif; font-weight: 700; color: var(--accent); font-size: 1.1rem; margin-bottom: 0.4rem; }
+.tm-layer { display: grid; grid-template-columns: auto auto 1fr; gap: 0.5rem; align-items: start; padding: 0.35rem 0; cursor: pointer; }
+.tm-layer input { margin-top: 0.3rem; width: 1.05rem; height: 1.05rem; }
+.tm-layer small { display: block; color: var(--muted); line-height: 1.35; }
+.swatch { display: inline-block; width: 1.1rem; height: 1.1rem; border-radius: 3px; margin-top: 0.2rem; border: 2px solid; flex: none; }
+.swatch-settlement { border-color: var(--l-settlement); background: var(--l-settlement); border-radius: 50%; }
+.swatch-control { border-color: var(--l-control); border-style: dashed; background: repeating-linear-gradient(45deg, var(--l-control) 0 2px, transparent 2px 5px); }
+.swatch-claim { border-color: var(--l-claim); border-style: dotted; background: radial-gradient(var(--l-claim) 1px, transparent 1.5px) 0 0 / 4px 4px; }
+.swatch-ownership { border-color: var(--l-ownership); background: var(--l-ownership); }
+.swatch-proposal { border: 0; height: 0.2rem; margin-top: 0.6rem; background: repeating-linear-gradient(90deg, var(--l-proposal) 0 5px, transparent 5px 8px); }
+
+.tm-h4 { font-size: 0.95rem; margin: 0.9rem 0 0.4rem; }
+.tm-uncertainty { margin: 0; font-size: 0.88rem; display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+.tm-uncertainty dt { font-weight: 600; display: flex; gap: 0.4rem; align-items: center; }
+.tm-uncertainty dd { margin: 0.1rem 0 0 1.6rem; color: var(--muted); }
+.unc { display: inline-block; width: 1rem; height: 1rem; border-radius: 50%; border: 2px solid currentColor; flex: none; vertical-align: -0.15rem; margin-right: 0.3rem; }
+.unc-approximate { border-style: dashed; }
+.unc-schematic { border-radius: 3px; border-style: dotted; }
+
+/* Map */
+.tm-map svg { width: 100%; height: auto; display: block; border-radius: 6px; }
+.sea { fill: var(--sea); }
+.land { fill: var(--land); stroke: var(--land-edge); stroke-width: 0.4; }
+.land-label { font-size: 2.1px; fill: var(--muted); font-style: italic; }
+.feat { cursor: pointer; outline: none; }
+.feat .mark { transition: stroke-width 0.15s; }
+.feat-settlement .mark { fill: var(--l-settlement); stroke: var(--surface); stroke-width: 0.5; }
+.feat-settlement .halo { fill: none; stroke: var(--l-settlement); stroke-width: 0.45; stroke-dasharray: 1.2 0.9; }
+.feat-label { font-size: 2.3px; fill: var(--text); paint-order: stroke; stroke: var(--land); stroke-width: 0.6px; pointer-events: none; }
+.feat-control .mark { fill: url(#hatch-control); fill-opacity: 0.55; stroke: var(--l-control); stroke-width: 0.5; stroke-dasharray: 2 1.2; }
+.hatch-control-line { stroke: var(--l-control); stroke-width: 0.5; }
+.feat-claim .mark { fill: url(#hatch-claim); stroke: var(--l-claim); stroke-width: 0.5; stroke-dasharray: 0.4 0.9; stroke-linecap: round; }
+.hatch-claim-dot { fill: var(--l-claim); }
+.feat-ownership .mark { fill: var(--l-ownership); fill-opacity: 0.85; stroke: var(--surface); stroke-width: 0.4; }
+.feat-proposal .mark { fill: none; stroke: var(--l-proposal); stroke-width: 0.8; stroke-dasharray: 2.2 1.2; }
+.feat-proposal .hit { fill: none; stroke: transparent; stroke-width: 4; }
+.feat:hover .mark, .feat:focus-visible .mark { stroke-width: 1; }
+.feat:focus-visible .mark { stroke: var(--focus); }
+.feat.is-selected .mark, .feat.is-related .mark { stroke: var(--sel); stroke-width: 1.1; }
+.feat-proposal.is-selected .mark { stroke-width: 1.4; }
+.has-selection .feat:not(.is-selected):not(.is-related) { opacity: 0.45; }
+@media (prefers-reduced-motion: reduce) { .feat .mark { transition: none; } }
+
+/* Evidence panel */
+.tm-empty { color: var(--muted); }
+.evidence h3 { font-size: 1.15rem; margin: 0.2rem 0 0.5rem; }
+.evidence h4 { font-size: 0.95rem; margin: 0.75rem 0 0.25rem; }
+.evidence dl.meta { grid-template-columns: 1fr; gap: 0; font-size: 0.92rem; }
+.evidence dl.meta dt { margin-top: 0.4rem; }
+.evidence ul { padding-left: 1rem; margin: 0.2rem 0; }
+.ev-kind { display: flex; gap: 0.4rem; align-items: center; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0; }
+.ev-kind .swatch { margin-top: 0; }
+.ev-date-big { font-weight: 600; }
+.ev-feature { border-top: 1px solid var(--rule); padding-top: 0.5rem; margin-top: 0.5rem; }
+.layer-hidden-note { font-size: 0.85rem; background: var(--preview-bg); padding: 0.3rem 0.5rem; border-radius: 4px; }
+.linklike { background: none; border: 0; padding: 0; color: var(--link); text-decoration: underline; cursor: pointer; font: inherit; text-align: left; }
+
+/* Timeline */
+.tm-timeline { margin-top: 1.25rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 0.9rem; }
+.tm-note { margin: 0 0 0.5rem; font-size: 0.9rem; color: var(--muted); }
+.tm-axis { display: none; }
+.tm-events { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+.tm-events button {
+  width: 100%; text-align: left; font: inherit; cursor: pointer;
+  background: var(--bg); color: var(--text); border: 1px solid var(--rule); border-left: 4px solid var(--accent);
+  border-radius: 6px; padding: 0.4rem 0.6rem;
+}
+.tm-events button.is-approx { border-left-style: dashed; }
+.tm-events .is-range button { border-left-width: 8px; }
+.tm-events button[aria-pressed='true'] { border-color: var(--sel); box-shadow: 0 0 0 2px var(--sel); }
+.tm-events .is-related button { border-color: var(--sel); }
+.ev-date { display: block; font-size: 0.8rem; color: var(--muted); }
+.ev-title { font-weight: 600; }
+
+@media (min-width: 64rem) {
+  /* Wide screens: events sit on a proportional axis; ranges show as bars. */
+  .tm-axis { display: block; position: relative; height: 1.4rem; border-bottom: 2px solid var(--rule); margin: 0 0 0.5rem; }
+  .tick { position: absolute; left: var(--at); transform: translateX(-50%); font-size: 0.8rem; color: var(--muted); }
+  .tick::after { content: ''; position: absolute; left: 50%; top: 1.25rem; height: 0.5rem; border-left: 2px solid var(--rule); }
+  /* Rows are assigned at build time (--lane), so cards never overlap. */
+  .tm-events { position: relative; display: block; height: calc(var(--lanes) * 5.6rem); }
+  .tm-events li { position: absolute; left: var(--left); width: calc(var(--width) - 0.5rem); top: calc(var(--lane) * 5.6rem); }
+  .tm-events button { height: 5.1rem; }
+  .tm-axis .marker { position: absolute; top: 1.05rem; left: var(--marker); width: max(0.7rem, calc(var(--marker-end) - var(--marker))); height: 0.7rem; margin-left: -0.35rem; border-radius: 0.35rem; background: var(--accent); }
+  .tm-axis .marker:not(.is-span) { z-index: 1; box-shadow: 0 0 0 2px var(--surface); }
+  .tm-axis .marker.is-span { opacity: 0.35; height: 0.5rem; top: 1.15rem; }
+  .tm-axis .marker.is-approx { background: none; border: 2px dashed var(--accent); }
+  .tm-axis .marker.is-approx { background: var(--surface); }
+}
+
+/* Table (text alternative) */
+.tm-table { margin-top: 1.25rem; }
+.table-scroll { overflow-x: auto; }
+.tm-table table { min-width: 40rem; font-size: 0.93rem; }
+.tm-table tr.is-selected { background: var(--preview-bg); }
+.tm-table button { font: inherit; cursor: pointer; padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--accent); background: var(--surface); color: var(--link); }

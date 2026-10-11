@@ -11,6 +11,7 @@
   --preview-bg: #eef3f8;
   --draft-bg: #fff4d6;
   --fixture-bg: #ece5ff;
+  --demo-bg: #fdf3e2;
   color-scheme: light dark;
 }
 @media (prefers-color-scheme: dark) {
@@ -26,6 +27,7 @@
     --preview-bg: #1b2733;
     --draft-bg: #3d3214;
     --fixture-bg: #2e2647;
+    --demo-bg: #3a2c16;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -61,6 +63,9 @@ a { color: var(--link); overflow-wrap: anywhere; }
 .banner-preview span { display: block; margin-top: 0.4rem; }
 .banner-draft { background: var(--draft-bg); border-left-color: currentColor; }
 .banner-fixture { background: var(--fixture-bg); border-left-color: currentColor; }
+.banner-demo { background: var(--demo-bg); }
+.demo-callout { margin-top: 2.25rem; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--rule); border-left: 4px solid var(--accent); border-radius: 6px; }
+.demo-callout h2 { margin-top: 0; }
 
 .lead { font-size: 1.2rem; color: var(--muted); }
 .areas { list-style: none; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
@@ -73,7 +78,8 @@ a { color: var(--link); overflow-wrap: anywhere; }
 .landing-columns section { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 1.25rem; }
 .landing-columns h2 { margin-top: 0; }
 .button { display: inline-block; padding: 0.55rem 1rem; border-radius: 4px; background: var(--accent); color: var(--bg); text-decoration: none; font-weight: 600; }
-.landing-repo { margin-top: 2rem; text-align: center; }
+.landing-repo { margin-top: 1rem; text-align: center; }
+.landing-demo { margin-top: 2rem; text-align: center; font-weight: 600; }
 
 .site-footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.95rem; color: var(--muted); }
 

@@ -1,0 +1,331 @@
+---
+// Public interface demonstration (Task 009; docs/DEMO_POLICY.md). Invented data only.
+import Base from '../../../layouts/Base.astro';
+import { LOCALES, type Locale } from '../../../lib/content/constants.ts';
+import { DEMO_SLUG, DEMO_UI, formatInventedDate, loadDemo, type DemoData } from '../../../lib/demo.ts';
+import { OTHER_LOCALE, url } from '../../../lib/i18n.ts';
+import '../../../styles/demo.css';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({ params: { locale, page: DEMO_SLUG[locale] } }));
+}
+
+const locale = Astro.params.locale as Locale;
+const t = DEMO_UI[locale];
+const d: DemoData = loadDemo();
+const [W, H] = d.view_box;
+const layer = new Map(d.layers.map((l) => [l.id, l]));
+const level = new Map(d.uncertainty.map((u) => [u.id, u]));
+const feature = new Map(d.features.map((f) => [f.id, f]));
+const eventsFor = (fid: string) => d.events.filter((e) => e.features.includes(fid));
+const layersOf = (fids: string[]) => [...new Set(fids.map((f) => feature.get(f)!.layer))].join(' ');
+const date = (x: { date: Parameters<typeof formatInventedDate>[0] }) => formatInventedDate(x.date, locale);
+const ariaFeature = (f: DemoData['features'][number]) =>
+  `${f.title[locale]}. ${layer.get(f.layer)!.label[locale]}. ${level.get(f.uncertainty)!.label[locale]}. ${date(f)}.`;
+
+// Timeline axis spans the invented years in the data, with a little padding.
+const years = d.events.flatMap((e) => [e.date.from, e.date.to ?? e.date.from]);
+const minY = Math.max(0, Math.min(...years) - 2);
+const maxY = Math.max(...years) + 2;
+const pos = (y: number) => ((y - minY) / (maxY - minY)) * 100;
+const ticks = Array.from({ length: Math.floor(maxY / 10) - Math.ceil(minY / 10) + 1 }, (_, i) => (Math.ceil(minY / 10) + i) * 10);
+
+// Assign each event card a row so cards never overlap: a card spans at least CARD% of the axis.
+const CARD = 21;
+const laneEnds: number[] = [];
+const placed = [...d.events]
+  .sort((a, b) => a.date.from - b.date.from)
+  .map((e) => {
+    const start = pos(e.date.from);
+    const width = Math.max(CARD, pos(e.date.to ?? e.date.from) - start);
+    const left = Math.min(start, 100 - width);
+    let lane = laneEnds.findIndex((end) => end <= left);
+    if (lane < 0) lane = laneEnds.push(0) - 1;
+    laneEnds[lane] = left + width + 1;
+    return { e, left, width, lane, marker: start, markerEnd: pos(e.date.to ?? e.date.from) };
+  });
+---
+
+<Base
+  locale={locale}
+  title={t.title}
+  alternate={url(OTHER_LOCALE[locale], 'demo', DEMO_SLUG[OTHER_LOCALE[locale]])}
+  description={t.banner}
+  banner="demo"
+>
+  <div class="tm">
+    <h1>{t.title}</h1>
+    <p class="lead">{t.lead}</p>
+    <p class="tm-notice" role="note">{d.notice[locale]}</p>
+
+    <div class="tm-grid">
+      <section class="tm-controls" aria-labelledby="tm-layers-h">
+        <fieldset>
+          <legend id="tm-layers-h">{t.layers}</legend>
+          {d.layers.map((l) => (
+            <label class="tm-layer">
+              <input type="checkbox" checked data-layer-toggle={l.id} />
+              <span class={`swatch swatch-${l.id}`} aria-hidden="true"></span>
+              <span>
+                <strong>{l.label[locale]}</strong>
+                <small>{l.meaning[locale]}</small>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+      </section>
+
+      <figure class="tm-map" aria-labelledby="tm-map-h">
+        <figcaption>
+          <h2 id="tm-map-h" class="tm-h3">{t.map}</h2>
+          <p>{t.mapNote}</p>
+        </figcaption>
+        <svg viewBox={`0 0 ${W} ${H}`} role="group" aria-labelledby="tm-map-h">
+          <defs>
+            <pattern id="hatch-control" width="2.4" height="2.4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="2.4" class="hatch-control-line" />
+            </pattern>
+            <pattern id="hatch-claim" width="2.4" height="2.4" patternUnits="userSpaceOnUse">
+              <circle cx="1.2" cy="1.2" r="0.45" class="hatch-claim-dot" />
+            </pattern>
+          </defs>
+          <rect class="sea" x="0" y="0" width={W} height={H} />
+          <path class="land" d={d.land.path} />
+          <text class="land-label" x={W / 2} y={H - 2.5} text-anchor="middle">{d.land.label[locale]}</text>
+          {['control', 'claim', 'ownership', 'proposal', 'settlement'].map((layerId) =>
+            d.features
+              .filter((f) => f.layer === layerId)
+              .map((f) => (
+                <g
+                  class={`feat feat-${f.layer} unc-${f.uncertainty}`}
+                  data-layer={f.layer}
+                  data-id={f.id}
+                  data-select={f.id}
+                  role="button"
+                  tabindex="0"
+                  aria-label={ariaFeature(f)}
+                  aria-pressed="false"
+                >
+                  {f.geometry.type === 'point' && (
+                    <>
+                      {f.uncertainty === 'approximate' && <circle class="halo" cx={f.geometry.x} cy={f.geometry.y} r="4.2" />}
+                      <circle class="mark" cx={f.geometry.x} cy={f.geometry.y} r="1.6" />
+                      <text class="feat-label" x={f.geometry.x + 2.6} y={f.geometry.y + 0.9}>{f.title[locale]}</text>
+                    </>
+                  )}
+                  {f.geometry.type === 'area' && (
+                    <ellipse class="mark" cx={f.geometry.cx} cy={f.geometry.cy} rx={f.geometry.rx} ry={f.geometry.ry} />
+                  )}
+                  {f.geometry.type === 'rect' && (
+                    <rect class="mark" x={f.geometry.x} y={f.geometry.y} width={f.geometry.w} height={f.geometry.h} />
+                  )}
+                  {f.geometry.type === 'line' && (
+                    <>
+                      <polyline class="hit" points={f.geometry.points.map((p) => p.join(',')).join(' ')} />
+                      <polyline class="mark" points={f.geometry.points.map((p) => p.join(',')).join(' ')} />
+                    </>
+                  )}
+                </g>
+              )),
+          )}
+        </svg>
+        <h3 class="tm-h4">{t.uncertainty}</h3>
+        <dl class="tm-uncertainty">
+          {d.uncertainty.map((u) => (
+            <div>
+              <dt><span class={`unc unc-${u.id}`} aria-hidden="true"></span>{u.label[locale]}</dt>
+              <dd>{u.description[locale]}</dd>
+            </div>
+          ))}
+        </dl>
+      </figure>
+
+      <aside class="tm-panel" aria-labelledby="tm-evidence-h">
+        <h2 id="tm-evidence-h" class="tm-h3">{t.evidence}</h2>
+        <div id="tm-evidence" aria-live="polite">
+          <p class="tm-empty">{t.evidenceEmpty}</p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="tm-timeline" aria-labelledby="tm-timeline-h">
+      <h2 id="tm-timeline-h" class="tm-h3">{t.timeline}</h2>
+      <p class="tm-note">{t.timelineNote}</p>
+      <div class="tm-axis" aria-hidden="true">
+        {ticks.map((y) => <span class="tick" style={`--at:${pos(y)}%`}>{y}</span>)}
+        {placed.map(({ e, marker, markerEnd }) => (
+          <span
+            class={`marker${e.date.approximate ? ' is-approx' : ''}${markerEnd > marker ? ' is-span' : ''}`}
+            style={`--marker:${marker}%;--marker-end:${markerEnd}%`}
+          ></span>
+        ))}
+      </div>
+      <ol class="tm-events" style={`--lanes:${laneEnds.length}`}>
+        {placed.map(({ e, left, width, lane, marker, markerEnd }) => (
+          <li
+            style={`--left:${left}%;--width:${width}%;--lane:${lane};--marker:${marker}%;--marker-end:${markerEnd}%`}
+            class={e.date.to !== undefined ? 'is-range' : 'is-point'}
+            data-layer={layersOf(e.features)}
+          >
+            <button type="button" data-select={e.id} aria-pressed="false" class={e.date.approximate ? 'is-approx' : ''}>
+              <span class="ev-date">{date(e)}</span>
+              <span class="ev-title">{e.title[locale]}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="tm-table" aria-labelledby="tm-table-h">
+      <h2 id="tm-table-h" class="tm-h3">{t.table}</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">{t.feature}</th>
+              <th scope="col">{t.layer}</th>
+              <th scope="col">{t.date}</th>
+              <th scope="col">{t.certainty}</th>
+              <th scope="col">{t.source}</th>
+              <th scope="col"><span class="visually-hidden">{t.show}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {d.features.map((f) => (
+              <tr data-layer={f.layer} data-id={f.id}>
+                <th scope="row">{f.title[locale]}</th>
+                <td>{layer.get(f.layer)!.label[locale]}</td>
+                <td>{date(f)}</td>
+                <td>{level.get(f.uncertainty)!.label[locale]}</td>
+                <td>{f.example_source.title[locale]}, {f.example_source.locator[locale]}</td>
+                <td><button type="button" data-select={f.id} aria-pressed="false">{t.show}</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {/* Evidence panel content, one template per selectable item. */}
+    {d.features.map((f) => (
+      <template id={`tm-detail-${f.id}`}>
+        <article class="evidence" data-layer={f.layer}>
+          <p class="ev-kind"><span class={`swatch swatch-${f.layer}`} aria-hidden="true"></span>{layer.get(f.layer)!.label[locale]}</p>
+          <h3>{f.title[locale]}</h3>
+          <p>{f.summary[locale]}</p>
+          <p class="layer-hidden-note" hidden>{t.layerHidden}</p>
+          <dl class="meta">
+            <dt>{t.date}</dt><dd>{date(f)}</dd>
+            <dt>{t.certainty}</dt><dd><span class={`unc unc-${f.uncertainty}`} aria-hidden="true"></span>{level.get(f.uncertainty)!.label[locale]}: {level.get(f.uncertainty)!.description[locale]}</dd>
+            <dt>{t.layer}</dt><dd>{layer.get(f.layer)!.meaning[locale]}</dd>
+            <dt>{t.source}</dt><dd>{f.example_source.title[locale]}</dd>
+            <dt>{t.locator}</dt><dd>{f.example_source.locator[locale]}</dd>
+            <dt>{t.status}</dt><dd>{t.statusValue}</dd>
+            <dt>{t.linkedEvents}</dt>
+            <dd><ul>{eventsFor(f.id).map((e) => <li><button type="button" class="linklike" data-select={e.id}>{date(e)}: {e.title[locale]}</button></li>)}</ul></dd>
+          </dl>
+        </article>
+      </template>
+    ))}
+    {d.events.map((e) => (
+      <template id={`tm-detail-${e.id}`}>
+        <article class="evidence">
+          <p class="ev-kind">{t.timeline}</p>
+          <h3>{e.title[locale]}</h3>
+          <p class="ev-date-big">{date(e)}</p>
+          <h4>{t.linkedFeatures}</h4>
+          {e.features.map((fid) => {
+            const f = feature.get(fid)!;
+            return (
+              <div class="ev-feature" data-layer={f.layer}>
+                <p><strong>{f.title[locale]}</strong>: {f.summary[locale]}</p>
+                <p class="layer-hidden-note" hidden>{t.layerHidden}</p>
+                <dl class="meta">
+                  <dt>{t.certainty}</dt><dd><span class={`unc unc-${f.uncertainty}`} aria-hidden="true"></span>{level.get(f.uncertainty)!.label[locale]}</dd>
+                  <dt>{t.source}</dt><dd>{f.example_source.title[locale]}, {f.example_source.locator[locale]}</dd>
+                  <dt>{t.status}</dt><dd>{t.statusValue}</dd>
+                </dl>
+                <button type="button" class="linklike" data-select={f.id}>{t.show}: {f.title[locale]}</button>
+              </div>
+            );
+          })}
+        </article>
+      </template>
+    ))}
+  </div>
+
+  <script>
+    // Coordinated selection: one selected item at a time, mirrored across map, timeline,
+    // table and evidence panel. Selection is kept in ?sel= so the view can be shared.
+    const root = document.querySelector<HTMLElement>('.tm')!;
+    const panel = document.getElementById('tm-evidence')!;
+    const hiddenLayers = new Set<string>();
+
+    function relatedIds(id: string): string[] {
+      const tpl = document.getElementById(`tm-detail-${id}`) as HTMLTemplateElement | null;
+      if (!tpl) return [];
+      return [id, ...[...tpl.content.querySelectorAll<HTMLElement>('[data-select]')].map((b) => b.dataset.select!)];
+    }
+
+    function applyLayerNotes() {
+      panel.querySelectorAll<HTMLElement>('[data-layer]').forEach((el) => {
+        el.querySelector<HTMLElement>('.layer-hidden-note')?.toggleAttribute('hidden', !hiddenLayers.has(el.dataset.layer!));
+      });
+    }
+
+    function select(id: string, moveFocus = false) {
+      const tpl = document.getElementById(`tm-detail-${id}`) as HTMLTemplateElement | null;
+      if (!tpl) return;
+      const related = new Set(relatedIds(id));
+      root.querySelectorAll<HTMLElement>('[data-select][aria-pressed]').forEach((el) => {
+        el.setAttribute('aria-pressed', String(el.dataset.select === id));
+      });
+      root.querySelectorAll<HTMLElement>('.feat, .tm-events li, .tm-table tr[data-id]').forEach((el) => {
+        const key = el.dataset.id ?? el.querySelector<HTMLElement>('[data-select]')?.dataset.select ?? '';
+        el.classList.toggle('is-selected', key === id);
+        el.classList.toggle('is-related', key !== id && related.has(key));
+      });
+      root.classList.add('has-selection');
+      panel.replaceChildren(tpl.content.cloneNode(true));
+      applyLayerNotes();
+      const url = new URL(location.href);
+      url.searchParams.set('sel', id);
+      history.replaceState(null, '', url);
+      if (moveFocus) {
+        const heading = panel.querySelector<HTMLElement>('h3');
+        heading?.setAttribute('tabindex', '-1');
+        heading?.focus();
+      }
+    }
+
+    root.addEventListener('click', (ev) => {
+      const target = (ev.target as Element).closest<HTMLElement>('[data-select]');
+      if (target) select(target.dataset.select!, panel.contains(target));
+    });
+    root.addEventListener('keydown', (ev) => {
+      const target = (ev.target as Element).closest<HTMLElement>('g[data-select]');
+      if (target && (ev.key === 'Enter' || ev.key === ' ')) {
+        ev.preventDefault();
+        select(target.dataset.select!);
+      }
+    });
+    root.querySelectorAll<HTMLInputElement>('[data-layer-toggle]').forEach((box) => {
+      box.addEventListener('change', () => {
+        const id = box.dataset.layerToggle!;
+        if (box.checked) hiddenLayers.delete(id);
+        else hiddenLayers.add(id);
+        // Map features and timeline events hide with their layer; the table always lists everything.
+        root.querySelectorAll<SVGGElement>('.feat[data-layer]').forEach((el) => {
+          el.style.display = hiddenLayers.has(el.dataset.layer!) ? 'none' : '';
+        });
+        root.querySelectorAll<HTMLElement>('.tm-events li[data-layer]').forEach((el) => {
+          el.hidden = el.dataset.layer!.split(' ').every((l) => hiddenLayers.has(l));
+        });
+        applyLayerNotes();
+      });
+    });
+
+    const initial = new URL(location.href).searchParams.get('sel');
+    if (initial) select(initial);
+  </script>
+</Base>

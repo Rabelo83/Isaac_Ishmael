@@ -3,6 +3,7 @@
 import '../styles/base.css';
 import { COPY, REPOSITORY_URL, SITE_STAGE } from '../lib/copy.ts';
 import { UI, url } from '../lib/i18n.ts';
+import { DEMO_SLUG, DEMO_UI } from '../lib/demo.ts';
 import { MODE } from '../lib/site.ts';
 ---
 
@@ -40,6 +41,11 @@ import { MODE } from '../lib/site.ts';
           <p><a class="button" href={url('es')} hreflang="es">Entrar en español</a></p>
         </section>
       </div>
+      <p class="landing-demo">
+        <a href={url('en', 'demo', DEMO_SLUG.en)} hreflang="en">{DEMO_UI.en.homeLink}</a>
+        <span aria-hidden="true"> · </span>
+        <a href={url('es', 'demo', DEMO_SLUG.es)} hreflang="es" lang="es">{DEMO_UI.es.homeLink}</a>
+      </p>
       <p class="landing-repo">
         <a href={REPOSITORY_URL} rel="noopener">GitHub</a>
       </p>

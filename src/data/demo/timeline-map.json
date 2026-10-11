@@ -1,0 +1,173 @@
+{
+  "notice": {
+    "en": "Interface demonstration with invented data. The island, calendar, places, groups and example sources are made up to show how the site will work. Nothing here is historical evidence or describes a real place.",
+    "es": "Demostración de la interfaz con datos inventados. La isla, el calendario, los lugares, los grupos y las fuentes de ejemplo son ficticios y solo muestran cómo funcionará el sitio. Nada de esto es prueba histórica ni describe un lugar real."
+  },
+  "view_box": [100, 64],
+  "land": {
+    "path": "M14,20 C20,9 36,6 50,10 C62,5 82,9 89,19 C96,29 93,45 85,52 C76,60 58,57 46,57 C32,59 17,54 11,43 C7,35 9,27 14,20 Z",
+    "label": { "en": "Illustrative Isle (invented)", "es": "Isla ilustrativa (inventada)" }
+  },
+  "layers": [
+    {
+      "id": "settlement",
+      "label": { "en": "Population and settlement evidence", "es": "Pruebas de población y asentamiento" },
+      "meaning": { "en": "Where an example record places a settlement. Not a population count.", "es": "Dónde sitúa un registro de ejemplo un asentamiento. No es un recuento de población." }
+    },
+    {
+      "id": "control",
+      "label": { "en": "Administrative control", "es": "Control administrativo" },
+      "meaning": { "en": "An area an example record says was administered. Not a claim of sovereignty or ownership.", "es": "Un área que un registro de ejemplo describe como administrada. No es una afirmación de soberanía ni de propiedad." }
+    },
+    {
+      "id": "claim",
+      "label": { "en": "Claimed area", "es": "Área reclamada" },
+      "meaning": { "en": "An area an example group claimed. A claim is an attributed position, not a finding.", "es": "Un área reclamada por un grupo de ejemplo. Una reclamación es una posición atribuida, no una conclusión." }
+    },
+    {
+      "id": "ownership",
+      "label": { "en": "Private ownership", "es": "Propiedad privada" },
+      "meaning": { "en": "A parcel in an example land register. Ownership is separate from political control.", "es": "Una parcela de un registro de tierras de ejemplo. La propiedad es distinta del control político." }
+    },
+    {
+      "id": "proposal",
+      "label": { "en": "Proposed arrangement", "es": "Arreglo propuesto" },
+      "meaning": { "en": "A line sketched in an example proposal. It was never agreed or implemented.", "es": "Una línea esbozada en una propuesta de ejemplo. Nunca se acordó ni se aplicó." }
+    }
+  ],
+  "uncertainty": [
+    {
+      "id": "located",
+      "label": { "en": "Located", "es": "Localizado" },
+      "description": { "en": "The example source gives a specific location.", "es": "La fuente de ejemplo da una ubicación concreta." }
+    },
+    {
+      "id": "approximate",
+      "label": { "en": "Approximate", "es": "Aproximado" },
+      "description": { "en": "The example source gives a general location; the marker is placed approximately.", "es": "La fuente de ejemplo da una ubicación general; el marcador se sitúa de forma aproximada." }
+    },
+    {
+      "id": "schematic",
+      "label": { "en": "Schematic extent, not a boundary", "es": "Extensión esquemática, no una frontera" },
+      "description": { "en": "The example source describes an area in words. The shape only shows roughly where; it is not a surveyed or agreed boundary.", "es": "La fuente de ejemplo describe un área con palabras. La forma solo indica aproximadamente dónde; no es una frontera medida ni acordada." }
+    }
+  ],
+  "features": [
+    {
+      "id": "demo-hamlet-alpha",
+      "layer": "settlement",
+      "geometry": { "type": "point", "x": 29, "y": 31 },
+      "title": { "en": "Hamlet Alpha", "es": "Aldea Alfa" },
+      "summary": { "en": "An invented household list records Hamlet Alpha from Year 4.", "es": "Una lista de hogares inventada registra la aldea Alfa desde el año 4." },
+      "date": { "from": 4, "to": 28 },
+      "uncertainty": "located",
+      "example_source": {
+        "title": { "en": "Invented household list", "es": "Lista de hogares inventada" },
+        "locator": { "en": "sheet 3", "es": "hoja 3" }
+      }
+    },
+    {
+      "id": "demo-hamlet-beta",
+      "layer": "settlement",
+      "geometry": { "type": "point", "x": 69, "y": 37 },
+      "title": { "en": "Hamlet Beta", "es": "Aldea Beta" },
+      "summary": { "en": "An invented travel diary mentions a hamlet near the eastern hills, around Year 14.", "es": "Un diario de viaje inventado menciona una aldea cerca de las colinas orientales, hacia el año 14." },
+      "date": { "from": 14, "approximate": true },
+      "uncertainty": "approximate",
+      "example_source": {
+        "title": { "en": "Invented travel diary", "es": "Diario de viaje inventado" },
+        "locator": { "en": "no page numbers; entry for the spring", "es": "sin números de página; entrada de la primavera" }
+      }
+    },
+    {
+      "id": "demo-office-west",
+      "layer": "control",
+      "geometry": { "type": "area", "cx": 31, "cy": 32, "rx": 17, "ry": 13 },
+      "title": { "en": "Western office area", "es": "Área de la oficina occidental" },
+      "summary": { "en": "An invented tax roll describes a western area run by a local office from Year 8 to Year 19.", "es": "Un registro fiscal inventado describe un área occidental gestionada por una oficina local entre los años 8 y 19." },
+      "date": { "from": 8, "to": 19 },
+      "uncertainty": "schematic",
+      "example_source": {
+        "title": { "en": "Invented tax roll", "es": "Registro fiscal inventado" },
+        "locator": { "en": "section 4", "es": "sección 4" }
+      }
+    },
+    {
+      "id": "demo-claim-gamma",
+      "layer": "claim",
+      "geometry": { "type": "area", "cx": 67, "cy": 33, "rx": 16, "ry": 15 },
+      "title": { "en": "Group Gamma's claimed hills", "es": "Colinas reclamadas por el grupo Gamma" },
+      "summary": { "en": "An invented petition by Group Gamma claims the eastern hills. Another group disputed it.", "es": "Una petición inventada del grupo Gamma reclama las colinas orientales. Otro grupo la disputó." },
+      "date": { "from": 17 },
+      "uncertainty": "schematic",
+      "example_source": {
+        "title": { "en": "Invented petition", "es": "Petición inventada" },
+        "locator": { "en": "no page numbers; opening paragraph", "es": "sin números de página; párrafo inicial" }
+      }
+    },
+    {
+      "id": "demo-parcel-delta",
+      "layer": "ownership",
+      "geometry": { "type": "rect", "x": 43, "y": 41, "w": 7, "h": 5 },
+      "title": { "en": "Parcel Delta", "es": "Parcela Delta" },
+      "summary": { "en": "An invented land register lists Parcel Delta as privately held in Year 24.", "es": "Un registro de tierras inventado inscribe la parcela Delta como propiedad privada en el año 24." },
+      "date": { "from": 24 },
+      "uncertainty": "located",
+      "example_source": {
+        "title": { "en": "Invented land register", "es": "Registro de tierras inventado" },
+        "locator": { "en": "entry 17", "es": "asiento 17" }
+      }
+    },
+    {
+      "id": "demo-sketch-line",
+      "layer": "proposal",
+      "geometry": { "type": "line", "points": [[49, 9], [51, 23], [47, 37], [51, 56]] },
+      "title": { "en": "Mediator's sketch line", "es": "Línea esbozada por el mediador" },
+      "summary": { "en": "An invented mediator's sketch proposed this line in Year 33. It was never agreed.", "es": "Un esbozo inventado de un mediador propuso esta línea en el año 33. Nunca se acordó." },
+      "date": { "from": 33 },
+      "uncertainty": "schematic",
+      "example_source": {
+        "title": { "en": "Invented mediator's sketch", "es": "Esbozo inventado del mediador" },
+        "locator": { "en": "attached drawing", "es": "dibujo adjunto" }
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "demo-ev-alpha",
+      "date": { "from": 4 },
+      "title": { "en": "Hamlet Alpha first listed", "es": "Primera mención de la aldea Alfa" },
+      "features": ["demo-hamlet-alpha"]
+    },
+    {
+      "id": "demo-ev-office",
+      "date": { "from": 8, "to": 19 },
+      "title": { "en": "Western office area administered", "es": "Gestión del área de la oficina occidental" },
+      "features": ["demo-office-west"]
+    },
+    {
+      "id": "demo-ev-beta",
+      "date": { "from": 14, "approximate": true },
+      "title": { "en": "Hamlet Beta mentioned", "es": "Mención de la aldea Beta" },
+      "features": ["demo-hamlet-beta"]
+    },
+    {
+      "id": "demo-ev-claim",
+      "date": { "from": 17 },
+      "title": { "en": "Group Gamma claims the eastern hills", "es": "El grupo Gamma reclama las colinas orientales" },
+      "features": ["demo-claim-gamma"]
+    },
+    {
+      "id": "demo-ev-parcel",
+      "date": { "from": 24 },
+      "title": { "en": "Parcel Delta registered", "es": "Inscripción de la parcela Delta" },
+      "features": ["demo-parcel-delta"]
+    },
+    {
+      "id": "demo-ev-sketch",
+      "date": { "from": 33 },
+      "title": { "en": "Mediator's sketch proposed", "es": "Propuesta del esbozo del mediador" },
+      "features": ["demo-sketch-line"]
+    }
+  ]
+}

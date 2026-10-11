@@ -6,7 +6,15 @@ import { validateCorpus } from '../../src/lib/content/validate.ts';
 import { REPOSITORY_URL } from '../../src/lib/copy.ts';
 
 const BASE = '/Isaac_Ishmael/';
-const PAGES = [BASE, `${BASE}en/`, `${BASE}es/`, `${BASE}en/methodology/`, `${BASE}es/metodologia/`];
+const PAGES = [
+  BASE,
+  `${BASE}en/`,
+  `${BASE}es/`,
+  `${BASE}en/methodology/`,
+  `${BASE}es/metodologia/`,
+  `${BASE}en/demo/timeline-map/`,
+  `${BASE}es/demo/cronologia-mapa/`,
+];
 
 // Strings that must never be served: the fixture token and every fixture ID.
 const fixtureIds = [...validateCorpus(loadCorpus('fixtures/valid'), 'fixtures').corpus.records.keys()];
