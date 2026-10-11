@@ -4,6 +4,7 @@ import { LOCALES, type Locale } from '../../lib/content/constants.ts';
 import { COPY, REPOSITORY_URL } from '../../lib/copy.ts';
 import { OTHER_LOCALE, UI, pageUrl, url } from '../../lib/i18n.ts';
 import { DEMO_SLUG, DEMO_UI } from '../../lib/demo.ts';
+import { ATLAS_UI } from '../../lib/atlas.ts';
 
 export function getStaticPaths() {
   return LOCALES.map((locale) => ({ params: { locale } }));
@@ -12,6 +13,7 @@ const locale = Astro.params.locale as Locale;
 const t = UI[locale];
 const c = COPY[locale];
 const d = DEMO_UI[locale];
+const a = ATLAS_UI[locale];
 ---
 
 <Base locale={locale} title={t.siteTitle} alternate={url(OTHER_LOCALE[locale])} description={c.homeLead}>
@@ -35,6 +37,12 @@ const d = DEMO_UI[locale];
         </li>
       ))}
     </ul>
+  </section>
+
+  <section aria-labelledby="atlas" class="demo-callout">
+    <h2 id="atlas">{a.homeHeading}</h2>
+    <p>{a.homeBody}</p>
+    <p><a class="button" href={url(locale, 'atlas')}>{a.homeLink}</a></p>
   </section>
 
   <section aria-labelledby="demo" class="demo-callout">

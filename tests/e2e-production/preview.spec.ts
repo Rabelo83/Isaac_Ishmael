@@ -14,6 +14,8 @@ const PAGES = [
   `${BASE}es/metodologia/`,
   `${BASE}en/demo/timeline-map/`,
   `${BASE}es/demo/cronologia-mapa/`,
+  `${BASE}en/atlas/`,
+  `${BASE}es/atlas/`,
 ];
 
 // Strings that must never be served: the fixture token and every fixture ID.

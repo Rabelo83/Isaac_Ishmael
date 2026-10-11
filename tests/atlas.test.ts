@@ -38,6 +38,7 @@ describe('atlas base data (Natural Earth)', () => {
       expect(l.url).toMatch(/^https:\/\/naciscdn\.org\/naturalearth\/10m\/physical\/ne_10m_[a-z_]+\.zip$/);
       expect(l.sha256).toMatch(/^[0-9a-f]{64}$/);
       expect(l.version).toMatch(/^\d+\.\d+\.\d+$/);
+      expect(l.file_date).toMatch(/^20\d\d-\d\d-\d\d$/);
     }
   });
 

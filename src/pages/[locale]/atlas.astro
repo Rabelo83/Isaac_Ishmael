@@ -1,15 +1,13 @@
 ---
-// Atlas preview (Task 010). Modern physical geography from Natural Earth; local preview builds only.
+// Atlas (Tasks 010–011): physical geography from public-domain Natural Earth data.
 import Base from '../../layouts/Base.astro';
 import { ATLAS_UI, displayName, kindOf, loadAtlas, pathOf, projection, type FeatureKind } from '../../lib/atlas.ts';
 import { LOCALES, type Locale } from '../../lib/content/constants.ts';
 import { OTHER_LOCALE, url } from '../../lib/i18n.ts';
-// Inlined rather than bundled: production builds no atlas page, so they must emit none of its CSS.
+// Inlined so the stylesheet ships only with the atlas pages.
 import atlasCss from '../../styles/atlas.css?raw';
 
 export function getStaticPaths() {
-  // Never part of the published site: generated only by `npm run build:preview`.
-  if (process.env.SITE_MODE !== 'preview') return [];
   return LOCALES.map((locale) => ({ params: { locale } }));
 }
 
@@ -84,7 +82,11 @@ const layerInfo = (layer: Feature['layer']) => {
   const l = base.source.layers[key];
   return `${l.layer} (v${l.version})`;
 };
-const versions = [...new Set(Object.values(base.source.layers).map((l) => l.version))].sort().join(', ');
+const layers = Object.values(base.source.layers);
+const dateFmt = (iso: string) =>
+  new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${iso}T00:00:00Z`));
+const num = (n: number) => new Intl.NumberFormat(locale, { maximumFractionDigits: 6 }).format(n);
+const tol = base.processing.simplify.tolerance_degrees;
 
 // Only these features get a map label; every named feature is listed in the table.
 const LABELLED = new Set(['Mediterranean Sea', 'Gulf of Suez', 'Dead Sea', 'Sea of Galilee', 'Jordan', 'Suez Canal']);
@@ -101,7 +103,7 @@ const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }
   <div class="atlas">
     <h1>{t.title}</h1>
     <p class="lead">{t.lead}</p>
-    <p class="atlas-local" role="note"><strong>{t.localOnly}</strong></p>
+    <p class="atlas-base-notice" role="note"><strong>{t.baseNotice}</strong></p>
     <p class="atlas-notice" role="note">{t.notice}</p>
 
     <div class="atlas-grid">
@@ -171,7 +173,8 @@ const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }
               })}
             </g>
             <g class="grat-labels" aria-hidden="true">
-              {lons.map((lon) => <text x={project([lon, b.north])[0] + 3} y="12">{lon}° E</text>)}
+              {/* Hanging baseline: top labels grow downward, so they are never clipped by the frame. */}
+              {lons.map((lon) => <text class="top" x={project([lon, b.north])[0] + 3} y="2" dy="0.3em" dominant-baseline="hanging">{lon}° E</text>)}
               {lats.map((lat) => <text x="4" y={project([b.west, lat])[1] - 3}>{lat}° N</text>)}
             </g>
           </svg>
@@ -182,20 +185,53 @@ const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }
             <span class="sb-label">50 {t.km}</span>
           </div>
           <span class="north">↑ {t.north}</span>
-          <span class="scale-note">{t.scale}</span>
+          <span class="scale-note">{t.scaleBar}</span>
         </div>
       </figure>
 
       <aside class="atlas-panel" aria-labelledby="atlas-details-h">
         <h2 id="atlas-details-h" class="atlas-h">{t.details}</h2>
         <div id="atlas-details" aria-live="polite"><p class="muted">{t.detailsEmpty}</p></div>
-        <h2 class="atlas-h atlas-h-sub">{t.attributionHeading}</h2>
+
+        <h2 id="atlas-source-h" class="atlas-h atlas-h-sub">{t.sourceHeading}</h2>
         <p class="attribution">
-          {t.attribution} ({versions}), {t.accessed} {base.source.accessed}.{' '}
+          {t.attribution}{' '}
           <a href={base.source.homepage} rel="noopener">naturalearthdata.com</a>
         </p>
-        <h3 class="atlas-h atlas-h-sub">{t.processing}</h3>
-        <p class="muted small">{t.processingBody}</p>
+        <dl class="meta atlas-source">
+          <dt>{t.scaleLabel}</dt>
+          <dd><strong class="scale-value">{t.scaleValue}</strong>. {t.scaleNote}</dd>
+          <dt>{t.dataVersions}</dt>
+          <dd>{t.dataVersionsValue}: {layers.map((l) => `${l.layer.replace('ne_10m_', '')} ${l.version}`).join(', ')}</dd>
+          <dt>{t.fileDates}</dt>
+          <dd>{[...new Set(layers.map((l) => l.file_date))].sort().map(dateFmt).join('; ')} ({t.fileDatesNote})</dd>
+          <dt>{t.downloaded}</dt>
+          <dd>{dateFmt(base.source.accessed)}</dd>
+        </dl>
+
+        <details class="atlas-technical">
+          <summary>{t.technical}</summary>
+          <p class="small">{t.technicalIntro}</p>
+          <dl class="meta">
+            <dt>{t.studyArea}</dt>
+            <dd>{num(b.west)}–{num(b.east)}° E, {num(b.south)}–{num(b.north)}° N</dd>
+            <dt>{t.simplification}</dt>
+            <dd>{base.processing.simplify.method}: {Object.entries(tol).map(([k, v]) => `${k} ${num(v)}°`).join(', ')}</dd>
+            <dt>{t.precision}</dt>
+            <dd>{base.processing.decimals} {t.decimals}</dd>
+            <dt>{t.script}</dt>
+            <dd><code>{base.processing.script}</code></dd>
+          </dl>
+          <ul class="atlas-files">
+            {layers.map((l) => (
+              <li>
+                <a href={l.url} rel="noopener"><code>{l.layer}.zip</code></a>
+                <span>{t.version} {l.version}; {t.fileDate} {l.file_date}</span>
+                <span class="sha">{t.sha}: <code>{l.sha256}</code></span>
+              </li>
+            ))}
+          </ul>
+        </details>
       </aside>
     </div>
 
@@ -209,7 +245,6 @@ const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }
               <th scope="col">{t.type}</th>
               <th scope="col">{t.otherName}</th>
               <th scope="col">{t.layer}</th>
-              <th scope="col">{t.ids}</th>
               <th scope="col"><span class="visually-hidden">{t.show}</span></th>
             </tr>
           </thead>
@@ -220,7 +255,6 @@ const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }
                 <td>{t.kinds[f.kind]}</td>
                 <td>{f.omitted ?? (f.other || '—')}</td>
                 <td><code>{layerInfo(f.layer)}</code></td>
-                <td>{f.neIds.join(', ')}</td>
                 <td><button type="button" data-show={f.id} data-bbox={f.bbox.join(',')}>{t.show}</button></td>
               </tr>
             ))}
@@ -237,8 +271,11 @@ const lats = Array.from({ length: Math.floor(b.north) - Math.ceil(b.south) + 1 }
           {f.omitted && (<><dt>{t.labelOmitted}</dt><dd>{f.omitted}</dd></>)}
           {f.other && !f.omitted && (<><dt>{t.otherName}</dt><dd>{f.other}</dd></>)}
           <dt>{t.layer}</dt><dd><code>{layerInfo(f.layer)}</code></dd>
-          <dt>{t.ids}</dt><dd>{f.neIds.join(', ')}</dd>
         </dl>
+        <details class="atlas-technical">
+          <summary>{t.featureIds}</summary>
+          <p><code>{f.neIds.join(', ')}</code></p>
+        </details>
       </template>
     ))}
   </div>

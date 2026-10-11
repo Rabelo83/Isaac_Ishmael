@@ -18,12 +18,16 @@ const TOLERANCE = { land: 0.003, lake: 0.0015, river: 0.0015 }; // degrees (~150
 const DECIMALS = 4; // ~11 m
 
 const BASE_URL = 'https://naciscdn.org/naturalearth/10m/physical/';
-/** SHA-256 of the official zips as downloaded on 11 October 2026. A changed file fails the build. */
+/**
+ * SHA-256 of the official zips as downloaded on 11 October 2026 (a changed file fails the build),
+ * and each file's Last-Modified date on the download server at that time. The server date is the
+ * date of the file, not a survey date for the features: Natural Earth states no single date.
+ */
 const LAYERS = {
-  land: { file: 'ne_10m_land', sha256: 'e547d749445eaa0964aba76738090ec88f5e63c4585122170f98c67a7ea922dc' },
-  lakes: { file: 'ne_10m_lakes', sha256: '0803a06f9c3cb4671d89b68c48b142aad9366ba40f665245e12a913fbc61722a' },
-  rivers: { file: 'ne_10m_rivers_lake_centerlines', sha256: 'ded71b01870855ccfe19b51f2ec14c9bb48fae23c0e9f3c11974d426433b5c38' },
-  marine: { file: 'ne_10m_geography_marine_polys', sha256: 'a2d3395904c41e718e02c3ec5bc988712164c524c236fad32d95d282ca303b2a' },
+  land: { file: 'ne_10m_land', sha256: 'e547d749445eaa0964aba76738090ec88f5e63c4585122170f98c67a7ea922dc', file_date: '2022-05-13' },
+  lakes: { file: 'ne_10m_lakes', sha256: '0803a06f9c3cb4671d89b68c48b142aad9366ba40f665245e12a913fbc61722a', file_date: '2021-12-08' },
+  rivers: { file: 'ne_10m_rivers_lake_centerlines', sha256: 'ded71b01870855ccfe19b51f2ec14c9bb48fae23c0e9f3c11974d426433b5c38', file_date: '2021-12-08' },
+  marine: { file: 'ne_10m_geography_marine_polys', sha256: 'a2d3395904c41e718e02c3ec5bc988712164c524c236fad32d95d282ca303b2a', file_date: '2022-05-13' },
 } as const;
 
 /** Names left unlabelled in this first preview, with the reason shown to readers. */
@@ -40,7 +44,7 @@ const provenance = Object.fromEntries(
     const sha = createHash('sha256').update(zip).digest('hex');
     if (sha !== l.sha256) throw new Error(`${l.file}.zip: SHA-256 ${sha} does not match the pinned ${l.sha256}`);
     const version = readFileSync(join(RAW, l.file, `${l.file}.VERSION.txt`), 'utf8').trim();
-    return [key, { layer: l.file, version, url: `${BASE_URL}${l.file}.zip`, sha256: sha }];
+    return [key, { layer: l.file, version, file_date: l.file_date, url: `${BASE_URL}${l.file}.zip`, sha256: sha }];
   }),
 );
 
@@ -129,13 +133,14 @@ const marine = read('marine').flatMap((r) => {
 
 const doc = {
   description:
-    'Modern physical geography of the eastern Mediterranean, clipped and simplified from Natural Earth 1:10m vectors for the atlas preview. Not a historical reconstruction; no boundaries.',
+    'Physical geography of the eastern Mediterranean as represented in the cited Natural Earth 1:10m vector versions, clipped and simplified for the atlas. Not a historical reconstruction; no boundaries.',
   source: {
     name: 'Natural Earth',
     homepage: 'https://www.naturalearthdata.com/',
     license: 'Public domain (https://www.naturalearthdata.com/about/terms-of-use/)',
     credit: 'Made with Natural Earth.',
     scale: '1:10m',
+    scale_denominator: 10_000_000,
     accessed: '2026-10-11',
     layers: provenance,
   },

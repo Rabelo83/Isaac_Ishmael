@@ -1,5 +1,5 @@
-// Atlas preview (Task 010): modern physical geography only, from Natural Earth.
-// Generated in local preview builds only; never in production (see the page's getStaticPaths).
+// Atlas (Tasks 010–011): physical geography only, from public-domain Natural Earth data.
+// Published with the owner's approval in Task 011.
 import { readFileSync } from 'node:fs';
 import type { Locale } from './content/constants.ts';
 
@@ -22,10 +22,16 @@ export interface AtlasBase {
     license: string;
     credit: string;
     scale: string;
+    scale_denominator: number;
     accessed: string;
-    layers: Record<string, { layer: string; version: string; url: string; sha256: string }>;
+    layers: Record<string, { layer: string; version: string; file_date: string; url: string; sha256: string }>;
   };
-  processing: { bbox: { west: number; south: number; east: number; north: number } };
+  processing: {
+    bbox: { west: number; south: number; east: number; north: number };
+    simplify: { method: string; tolerance_degrees: Record<string, number> };
+    decimals: number;
+    script: string;
+  };
   land: Pt[][];
   coast: Pt[][];
   lakes: (Named & { rings: Pt[][] })[];
@@ -82,12 +88,17 @@ export function kindOf(layer: 'lakes' | 'rivers' | 'marine', f: Named): FeatureK
 
 export const ATLAS_UI = {
   en: {
-    navLabel: 'Atlas preview',
-    title: 'Atlas preview: the eastern Mediterranean',
-    lead: 'A geographic base for future maps: today’s coastlines, lakes and rivers around the region this project studies.',
+    navLabel: 'Atlas',
+    title: 'Atlas: the eastern Mediterranean',
+    lead: 'A geographic base for the project’s future maps: coastlines, lakes and rivers around the region it studies, as represented in Natural Earth’s physical map data.',
+    baseNotice:
+      'Geographic base map. It shows physical geography only. It is not historical evidence and draws no borders, territorial claims or settlements.',
     notice:
-      'This is a modern geographic base, not a historical reconstruction. It shows coastlines, lakes and rivers as mapped today by Natural Earth at 1:10m scale. Coastlines, lake levels and river courses have changed over time. No borders, territorial claims, settlements or historical events are shown.',
-    localOnly: 'Local preview only. This page is not part of the published site.',
+      'Not a historical reconstruction. Coastlines, lakes and rivers are drawn as represented in the cited Natural Earth data versions, not as they were in any historical period. Coastlines, lake levels and river courses have changed over time.',
+    homeHeading: 'Atlas',
+    homeBody:
+      'A geographic base map of the eastern Mediterranean, built from public-domain Natural Earth data. It shows physical geography only, with no borders or historical claims.',
+    homeLink: 'Open the atlas',
     map: 'Map',
     mapHelp: 'Drag or use the arrow keys to move, the mouse wheel or + and − to zoom, and 0 to reset. Select a named feature to see its details.',
     zoomIn: 'Zoom in',
@@ -100,29 +111,51 @@ export const ATLAS_UI = {
     otherName: 'Other name in the data',
     type: 'Type',
     layer: 'Natural Earth layer',
-    ids: 'Natural Earth feature ID',
     show: 'Show on map',
     labelOmitted: 'Label omitted',
     kinds: { sea: 'Sea', gulf: 'Gulf', lake: 'Lake', river: 'River', canal: 'Canal' },
-    attributionHeading: 'Geographic source',
-    attribution: 'Geography: Made with Natural Earth. Public-domain 1:10m physical vectors',
-    accessed: 'downloaded',
-    scale: 'Scale at 31.25° N',
+    sourceHeading: 'Source and limits',
+    attribution: 'Geography: Made with Natural Earth (public domain).',
+    dataVersions: 'Data versions',
+    dataVersionsValue: 'Natural Earth 1:10m physical vectors',
+    fileDates: 'Data file dates',
+    fileDatesNote: 'dates of the files on Natural Earth’s download server, not survey dates of the features',
+    downloaded: 'Downloaded for this project',
+    scaleLabel: 'Scale of the source data',
+    scaleValue: '1:10,000,000',
+    scaleNote: 'Regional detail: suitable for an overview of the region, not for local, parcel-level or legal precision.',
+    scaleBar: 'Scale bar at 31.25° N',
     km: 'km',
     north: 'N',
-    processing: 'How this base was prepared',
-    processingBody:
-      'The official Natural Earth files were checked against recorded SHA-256 hashes, clipped to 31.0–37.4° E and 28.5–34.0° N, and simplified (tolerances of about 150–330 m) with a script in this repository. Nothing was added by hand.',
+    technical: 'Technical details',
+    technicalIntro:
+      'The official Natural Earth files were checked against the SHA-256 hashes below, clipped to the study area and simplified with a script in this repository. Nothing was drawn by hand.',
+    studyArea: 'Study area',
+    simplification: 'Simplification tolerance',
+    precision: 'Coordinate precision',
+    decimals: 'decimal places',
+    script: 'Processing script',
+    file: 'File',
+    version: 'Version',
+    fileDate: 'File date',
+    sha: 'SHA-256 of the downloaded zip',
+    featureIds: 'Natural Earth feature IDs',
   },
   es: {
-    navLabel: 'Vista previa del atlas',
-    title: 'Vista previa del atlas: el Mediterráneo oriental',
-    lead: 'Una base geográfica para futuros mapas: las costas, lagos y ríos actuales de la región que estudia este proyecto.',
+    navLabel: 'Atlas',
+    title: 'Atlas: el Mediterráneo oriental',
+    lead: 'Una base geográfica para los futuros mapas del proyecto: costas, lagos y ríos de la región que estudia, tal como figuran en los datos cartográficos físicos de Natural Earth.',
+    baseNotice:
+      'Mapa base geográfico. Solo muestra geografía física. No es prueba histórica y no traza fronteras, reclamaciones territoriales ni asentamientos.',
     notice:
-      'Es una base geográfica moderna, no una reconstrucción histórica. Muestra las costas, los lagos y los ríos tal como los cartografía hoy Natural Earth a escala 1:10m. Las costas, el nivel de los lagos y el curso de los ríos han cambiado con el tiempo. No se muestran fronteras, reclamaciones territoriales, asentamientos ni acontecimientos históricos.',
-    localOnly: 'Solo vista previa local. Esta página no forma parte del sitio publicado.',
+      'No es una reconstrucción histórica. Las costas, los lagos y los ríos se dibujan tal como figuran en las versiones citadas de los datos de Natural Earth, no como eran en ningún período histórico. Las costas, el nivel de los lagos y el curso de los ríos han cambiado con el tiempo.',
+    homeHeading: 'Atlas',
+    homeBody:
+      'Un mapa base geográfico del Mediterráneo oriental, elaborado con datos de dominio público de Natural Earth. Solo muestra geografía física, sin fronteras ni afirmaciones históricas.',
+    homeLink: 'Abrir el atlas',
     map: 'Mapa',
-    mapHelp: 'Arrastre o use las flechas para desplazarse, la rueda del ratón o + y − para acercar o alejar, y 0 para restablecer. Seleccione un elemento con nombre para ver sus detalles.',
+    mapHelp:
+      'Arrastre o use las flechas para desplazarse, la rueda del ratón o + y − para acercar o alejar, y 0 para restablecer. Seleccione un elemento con nombre para ver sus detalles.',
     zoomIn: 'Acercar',
     zoomOut: 'Alejar',
     reset: 'Restablecer vista',
@@ -133,18 +166,34 @@ export const ATLAS_UI = {
     otherName: 'Otro nombre en los datos',
     type: 'Tipo',
     layer: 'Capa de Natural Earth',
-    ids: 'ID del elemento en Natural Earth',
     show: 'Ver en el mapa',
     labelOmitted: 'Etiqueta omitida',
     kinds: { sea: 'Mar', gulf: 'Golfo', lake: 'Lago', river: 'Río', canal: 'Canal' },
-    attributionHeading: 'Fuente geográfica',
-    attribution: 'Geografía: hecho con Natural Earth. Vectores físicos 1:10m de dominio público',
-    accessed: 'descargados el',
-    scale: 'Escala a 31,25° N',
+    sourceHeading: 'Fuente y límites',
+    attribution: 'Geografía: hecho con Natural Earth (dominio público).',
+    dataVersions: 'Versiones de los datos',
+    dataVersionsValue: 'Vectores físicos 1:10m de Natural Earth',
+    fileDates: 'Fechas de los archivos',
+    fileDatesNote: 'fechas de los archivos en el servidor de descarga de Natural Earth, no fechas de levantamiento de los elementos',
+    downloaded: 'Descargados para este proyecto',
+    scaleLabel: 'Escala de los datos de origen',
+    scaleValue: '1:10 000 000',
+    scaleNote: 'Detalle regional: sirve para una vista general de la región, no para precisión local, parcelaria ni jurídica.',
+    scaleBar: 'Barra de escala a 31,25° N',
     km: 'km',
     north: 'N',
-    processing: 'Cómo se preparó esta base',
-    processingBody:
-      'Los archivos oficiales de Natural Earth se verificaron con sus hashes SHA-256 registrados, se recortaron a 31,0–37,4° E y 28,5–34,0° N, y se simplificaron (tolerancias de unos 150–330 m) con un script de este repositorio. No se añadió nada a mano.',
+    technical: 'Detalles técnicos',
+    technicalIntro:
+      'Los archivos oficiales de Natural Earth se verificaron con los hashes SHA-256 indicados abajo, se recortaron al área de estudio y se simplificaron con un script de este repositorio. No se dibujó nada a mano.',
+    studyArea: 'Área de estudio',
+    simplification: 'Tolerancia de simplificación',
+    precision: 'Precisión de las coordenadas',
+    decimals: 'decimales',
+    script: 'Script de procesamiento',
+    file: 'Archivo',
+    version: 'Versión',
+    fileDate: 'Fecha del archivo',
+    sha: 'SHA-256 del zip descargado',
+    featureIds: 'ID de los elementos en Natural Earth',
   },
 } as const;

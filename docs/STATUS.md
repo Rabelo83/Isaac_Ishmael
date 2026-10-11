@@ -1,12 +1,12 @@
 # Status
 
-Last updated: 11 October 2026 (Claude Code, Task 010 local preview)
+Last updated: 11 October 2026 (Claude Code, Task 011 atlas publication)
 
 ## Current
 
 - **Live preview:** https://rabelo83.github.io/Isaac_Ishmael/ shows a bilingual landing page, home pages, and methodology pages. It contains no research content. Verified with `npm run verify:live`.
 - **Stage:** Tasks 002–004 are done. Task 004 applied the corrections from the [Codex editorial review](tasks/003-codex-editorial-review.md) to the preview copy.
-- **Atlas preview (Task 010, local only):** a real-geography base of the eastern Mediterranean from Natural Earth (public domain). It is built only in preview builds, on the unpushed branch `tech/010-atlas-preview`. See the [Task 010 record](tasks/010-atlas-preview.md).
+- **Atlas (Tasks 010–011):** a geographic base map of the eastern Mediterranean, built from Natural Earth 1:10m physical data (public domain). It is published at `/en/atlas/` and `/es/atlas/`, with the owner's approval and D-09 accepted. See the [Task 011 record](tasks/011-atlas-publication.md).
 - **Release candidate (Task 009):** a public interface demonstration of the timeline and map, built from invented data only, on `release/009-interface-demo`. The owner approved [D-11](DECISIONS.md) and publication on 11 October 2026. See the [Task 009 record](tasks/009-interface-demo.md). Research work continues on the unpublished development branches.
 - **Next milestone:** integrate the reviewed P1 research sample that Codex is preparing (three bilingual dossiers). No further infrastructure work is planned before then.
 - **Git:** `main` on GitHub is the deployed branch. Task work happens on `tech/<nnn>-…` branches. Pushes are never forced. `main` is fast-forwarded only after CI on the task branch passes.

@@ -1,4 +1,4 @@
-/* Atlas preview (Task 010): muted historical-atlas styling. */
+/* Atlas (Tasks 010–011): muted historical-atlas styling. */
 :root {
   --at-sea: #d7e3e6;
   --at-land: #eee5cf;
@@ -27,10 +27,8 @@
 }
 
 main:has(.atlas) { max-width: 80rem; }
-/* Marker: the production scan fails if this preview-only stylesheet ever ships. */
-.atlas { --build-scope: "preview-only"; }
 .atlas .lead { margin-bottom: 0.4rem; }
-.atlas-local { font-size: 0.95rem; background: var(--draft-bg); padding: 0.5rem 0.75rem; border-radius: 4px; }
+.atlas-base-notice { font-size: 0.95rem; background: var(--preview-bg); padding: 0.5rem 0.75rem; border-radius: 4px; }
 .atlas-notice { border-left: 4px solid var(--at-frame); padding: 0.5rem 0.75rem; font-size: 0.95rem; color: var(--muted); }
 .atlas-h { font-size: 1.1rem; margin: 0 0 0.5rem; }
 .atlas-h-sub { margin-top: 1.2rem; font-size: 1rem; }
@@ -105,3 +103,13 @@ main:has(.atlas) { max-width: 80rem; }
 .sb-bar span + span { background: var(--surface); }
 .sb-label, .north { font-variant-numeric: tabular-nums; }
 .north { font-weight: 700; color: var(--at-frame); }
+
+.atlas-source { margin-top: 0.5rem; }
+.scale-value { font-variant-numeric: tabular-nums; }
+.atlas-technical { margin-top: 0.9rem; border-top: 1px solid var(--rule); padding-top: 0.6rem; font-size: 0.9rem; }
+.atlas-technical summary { cursor: pointer; font-weight: 600; color: var(--link); }
+.atlas-technical summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.atlas-files { padding-left: 1rem; margin: 0.5rem 0 0; }
+.atlas-files li { margin-bottom: 0.5rem; }
+.atlas-files span { display: block; }
+.atlas-files .sha code { overflow-wrap: anywhere; font-size: 0.8rem; }

@@ -4,6 +4,7 @@ import '../styles/base.css';
 import { COPY, REPOSITORY_URL, SITE_STAGE } from '../lib/copy.ts';
 import { UI, url } from '../lib/i18n.ts';
 import { DEMO_SLUG, DEMO_UI } from '../lib/demo.ts';
+import { ATLAS_UI } from '../lib/atlas.ts';
 import { MODE } from '../lib/site.ts';
 ---
 
@@ -41,6 +42,11 @@ import { MODE } from '../lib/site.ts';
           <p><a class="button" href={url('es')} hreflang="es">Entrar en español</a></p>
         </section>
       </div>
+      <p class="landing-demo">
+        <a href={url('en', 'atlas')} hreflang="en">{ATLAS_UI.en.homeLink}</a>
+        <span aria-hidden="true"> · </span>
+        <a href={url('es', 'atlas')} hreflang="es" lang="es">{ATLAS_UI.es.homeLink}</a>
+      </p>
       <p class="landing-demo">
         <a href={url('en', 'demo', DEMO_SLUG.en)} hreflang="en">{DEMO_UI.en.homeLink}</a>
         <span aria-hidden="true"> · </span>
