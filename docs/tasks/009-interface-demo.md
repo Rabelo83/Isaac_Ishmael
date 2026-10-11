@@ -1,6 +1,6 @@
 # Task 009: Public interface demonstration (release candidate)
 
-Claude Code, 11 October 2026. This release candidate is waiting for publication approval. It has **not been pushed or deployed**.
+Claude Code, 11 October 2026. **Approved for publication by the owner on 11 October 2026 (D-11), after Codex review.** Only this release branch is published; the research branches and test fixtures stay unpublished.
 
 ## Branch and isolation
 
@@ -67,6 +67,6 @@ Saved outside the repository in `C:\Users\evanr\IsaacIshmael-release-009-screens
 
 ## Remaining before publication
 
-1. Owner approval of D-11 and of publication.
+1. ~~Owner approval of D-11 and of publication.~~ Approved on 11 October 2026.
 2. Merge `release/009-interface-demo` into `main` (fast-forward) and push. The existing workflow then deploys only after every check passes.
 3. Verify the live site with `npm run verify:live`.

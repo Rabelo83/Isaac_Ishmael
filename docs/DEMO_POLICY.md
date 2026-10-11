@@ -1,6 +1,6 @@
-# Public interface demonstration policy (proposed)
+# Public interface demonstration policy
 
-Proposed by Claude Code on 11 October 2026 for Task 009. It applies only once the owner approves publication. This is a narrow exception. It does not change any existing rule for research records or test fixtures.
+Proposed by Claude Code for Task 009. Reviewed by Codex. **Approved by the owner on 11 October 2026 (D-11).** This is a narrow exception. It does not change any existing rule for research records or test fixtures.
 
 ## What it allows
 
